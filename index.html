@@ -3,14 +3,11 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Diari·Pro — Controle de Diaristas</title>
-
-<!-- Firebase SDK -->
+<title>Diari·Pro</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 <style>
-:root {
+:root{
   --bg:#f4f3ef;--surface:#fff;--surface2:#f8f7f3;
   --border:#e0ddd4;--border2:#c8c4b8;
   --text:#18180f;--text2:#58564e;--text3:#98958a;
@@ -18,38 +15,52 @@
   --green:#15803d;--green-bg:#f0fdf4;--green-bd:#bbf7d0;
   --amber:#b45309;--amber-bg:#fffbeb;--amber-bd:#fde68a;
   --red:#b91c1c;--red-bg:#fef2f2;--red-bd:#fecaca;
-  --navy:#1e3a5f;
-  --radius:8px;
+  --navy:#1e3a5f;--radius:8px;
   --shadow:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.5;min-height:100vh}
 
+/* LOGIN */
+#login-screen{position:fixed;inset:0;background:var(--navy);display:flex;align-items:center;justify-content:center;z-index:999;padding:16px}
+.login-box{background:#fff;border-radius:16px;padding:32px 28px;width:100%;max-width:340px;box-shadow:0 24px 64px rgba(0,0,0,.3)}
+.login-logo{font-size:24px;font-weight:800;color:var(--navy);margin-bottom:4px}
+.login-logo span{color:var(--accent)}
+.login-sub{font-size:13px;color:var(--text2);margin-bottom:24px}
+.login-field{margin-bottom:14px}
+.login-field label{font-size:11px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;display:block;margin-bottom:4px}
+.login-field input{width:100%;padding:10px 12px;border:1.5px solid var(--border2);border-radius:var(--radius);font-size:14px;outline:none;transition:border-color .15s}
+.login-field input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+.login-err{color:var(--red);font-size:12px;margin-bottom:10px;display:none}
+.login-btn{width:100%;padding:11px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius);font-size:14px;font-weight:600;cursor:pointer;transition:background .15s}
+.login-btn:hover{background:#1e40af}
+
 /* NAV */
 nav{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 8px rgba(0,0,0,.2)}
-.nav-inner{max-width:1140px;margin:0 auto;padding:0 16px;display:flex;align-items:center;gap:0}
-.nav-brand{font-size:15px;font-weight:700;padding:14px 0;margin-right:16px;color:#fff;letter-spacing:-.01em;flex-shrink:0}
+.nav-inner{max-width:1140px;margin:0 auto;padding:0 14px;display:flex;align-items:center}
+.nav-brand{font-size:15px;font-weight:800;padding:13px 0;margin-right:14px;color:#fff;flex-shrink:0}
 .nav-brand span{color:#93c5fd}
 .nav-tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
-.tab-btn{padding:14px 14px;font-size:13px;font-weight:500;color:rgba(255,255,255,.55);background:none;border:none;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s}
-.tab-btn:hover{color:rgba(255,255,255,.9);background:rgba(255,255,255,.05)}
+.tab-btn{padding:13px 13px;font-size:13px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s}
+.tab-btn:hover{color:rgba(255,255,255,.9)}
 .tab-btn.active{color:#fff;border-bottom-color:#93c5fd}
-.nav-right{display:flex;gap:6px;padding:0 6px;align-items:center;flex-shrink:0}
-.pill{font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;white-space:nowrap}
+.nav-right{display:flex;gap:6px;align-items:center;flex-shrink:0;padding-left:8px}
+.pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .pill-red{background:#ef4444;color:#fff}
 .pill-green{background:#22c55e;color:#fff}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;transition:background .3s}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0}
 .sync-dot.ok{background:#22c55e}
 .sync-dot.err{background:#ef4444}
-.sync-dot.loading{background:#f59e0b;animation:pulse 1s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.sync-dot.spin{background:#f59e0b;animation:blink 1s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+.user-badge{font-size:11px;color:rgba(255,255,255,.6);padding:3px 8px;border:1px solid rgba(255,255,255,.2);border-radius:20px;cursor:pointer}
+.user-badge:hover{color:#fff;border-color:rgba(255,255,255,.5)}
 @media(max-width:600px){.nav-right .pill{display:none}}
 
 /* LAYOUT */
-main{max-width:1140px;margin:0 auto;padding:20px 14px 80px}
-.tab-pane{display:none}
-.tab-pane.active{display:block}
+main{max-width:1140px;margin:0 auto;padding:18px 14px 80px}
+.tab-pane{display:none}.tab-pane.active{display:block}
 
 /* CARDS */
 .card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:14px}
@@ -57,11 +68,11 @@ main{max-width:1140px;margin:0 auto;padding:20px 14px 80px}
 
 /* FORMS */
 label{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
-input[type=text],input[type=date],input[type=time],input[type=number],select,textarea{
+input[type=text],input[type=date],input[type=time],input[type=number],input[type=password],select,textarea{
   width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);
   font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;font-family:inherit
 }
-input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
+input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
 input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
@@ -70,20 +81,16 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 
 /* BUTTONS */
 .btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:inherit;line-height:1}
-.btn-primary{background:var(--accent);color:#fff}
-.btn-primary:hover{background:#1e40af}
-.btn-secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border2)}
-.btn-secondary:hover{background:var(--surface2)}
-.btn-green{background:var(--green);color:#fff}
-.btn-green:hover{background:#166534}
-.btn-red{background:var(--red);color:#fff}
-.btn-red:hover{background:#991b1b}
+.btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#1e40af}
+.btn-secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border2)}.btn-secondary:hover{background:var(--surface2)}
+.btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#166534}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#991b1b}
 .btn-sm{padding:5px 10px;font-size:12px}
 .btn-xs{padding:3px 7px;font-size:11px;border-radius:4px}
 .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
 /* STATUS */
-.status{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:.02em}
+.status{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
 .status-open{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd)}
 .status-paid{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
 .status-partial{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-bd)}
@@ -95,30 +102,25 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 .dtag-sunday{background:#fff7ed;color:#c2410c}
 .dtag-holiday{background:#fef2f2;color:#b91c1c}
 
-/* SUMMARY CARDS */
+/* SUMMARY */
 .sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
 .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
 .sum-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
-.sum-value{font-size:21px;font-weight:700;color:var(--text);line-height:1.1}
+.sum-value{font-size:20px;font-weight:700;color:var(--text);line-height:1.1}
 .sum-sub{font-size:11px;color:var(--text2);margin-top:2px}
 
-/* BULK TABLE */
+/* BULK */
 .bulk-header-row{display:grid;grid-template-columns:180px 78px 78px 78px 78px 34px 1fr;gap:6px;padding:0 4px;margin-bottom:4px}
 .bulk-row{display:grid;grid-template-columns:180px 78px 78px 78px 78px 34px 1fr;gap:6px;align-items:center;margin-bottom:6px}
-@media(max-width:720px){
-  .bulk-header-row{display:none}
-  .bulk-row{grid-template-columns:1fr 1fr 1fr 1fr 1fr 28px;gap:5px}
-  .bulk-row .row-name{grid-column:1/-1}
-}
+@media(max-width:720px){.bulk-header-row{display:none}.bulk-row{grid-template-columns:1fr 1fr 1fr 1fr 1fr 28px}.bulk-row .row-name{grid-column:1/-1}}
 .col-hdr{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:0 3px}
-.bulk-row input[type=time]{padding:5px 5px;font-size:12px}
+.bulk-row input[type=time]{padding:5px;font-size:12px}
 .row-prev{font-size:12px;font-weight:700;color:var(--green);white-space:nowrap}
-.row-prev.warn{color:var(--amber)}
 .add-row-btn{width:100%;margin-top:6px;padding:7px 0;background:none;border:1px dashed var(--border2);border-radius:var(--radius);font-size:12px;color:var(--text3);cursor:pointer;transition:all .15s}
 .add-row-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
 .chk-label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text2);user-select:none}
 
-/* ENTRY LIST */
+/* ENTRY */
 .entry-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;margin-bottom:7px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;transition:box-shadow .15s}
 .entry-item:hover{box-shadow:0 2px 10px rgba(0,0,0,.07)}
 .e-name{font-weight:700;font-size:14px;min-width:90px}
@@ -140,10 +142,9 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 .emp-info{flex:1;min-width:100px}
 .emp-name{font-weight:700;font-size:14px}
 .emp-pix{font-size:12px;color:var(--text2)}
-.emp-stats{display:flex;gap:18px;flex-wrap:wrap}
-.emp-stat span{display:block}
-.emp-stat .sl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.04em}
-.emp-stat .sv{font-size:14px;font-weight:700}
+.emp-stats{display:flex;gap:16px;flex-wrap:wrap}
+.emp-stat .sl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:block}
+.emp-stat .sv{font-size:14px;font-weight:700;display:block}
 
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
@@ -152,10 +153,11 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 .modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
 .modal-x{cursor:pointer;color:var(--text2);font-size:22px;line-height:1;padding:0 4px}
 .modal-x:hover{color:var(--text)}
-
-/* PAY HISTORY */
 .pay-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);align-items:center;font-size:12px}
 .pay-row:last-child{border-bottom:none}
+
+/* ALERT BANNER */
+.alert-banner{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px}
 
 /* RATE TABLE */
 .rate-tbl{width:100%;border-collapse:collapse;font-size:13px}
@@ -170,42 +172,92 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 .ac-item{padding:7px 10px;cursor:pointer;font-size:13px}
 .ac-item:hover{background:var(--accent-bg);color:var(--accent)}
 
-/* TOAST */
-#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+/* DASHBOARD */
+.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
+.dash-card.accent{background:var(--navy);border-color:var(--navy)}
+.dash-card.accent .sum-label{color:rgba(255,255,255,.6)}
+.dash-card.accent .sum-value{color:#fff}
+.dash-card.accent .sum-sub{color:rgba(255,255,255,.5)}
 
-/* FILTER BAR */
+/* FILTER */
 .filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
 .filter-row>div{display:flex;flex-direction:column;gap:3px}
 .filter-row input,.filter-row select{min-width:110px}
 hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+
+/* TOAST */
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+
+/* PENDING ALERT */
+.pending-list{margin-top:12px}
+.pending-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--radius);margin-bottom:6px;font-size:13px}
+.pending-item .pi-name{font-weight:700;flex:1}
+.pending-item .pi-val{font-weight:700;color:var(--amber)}
+.pending-item .pi-days{font-size:11px;color:var(--text3)}
 </style>
 </head>
 <body>
 
-<nav>
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-box">
+    <div class="login-logo">Diari<span>·</span>Pro</div>
+    <div class="login-sub">Faça login para continuar</div>
+    <div class="login-field">
+      <label>Usuário</label>
+      <input type="text" id="l-user" placeholder="seu usuário" autocomplete="username">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input type="password" id="l-pass" placeholder="••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <div class="login-err" id="l-err">Usuário ou senha incorretos.</div>
+    <button class="login-btn" onclick="doLogin()">Entrar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<nav id="app-nav" style="display:none">
   <div class="nav-inner">
     <div class="nav-brand">Diari<span>·</span>Pro</div>
     <div class="nav-tabs">
-      <button class="tab-btn active"  onclick="goTab('lancar')">Lançar</button>
+      <button class="tab-btn active"  onclick="goTab('dashboard')">Dashboard</button>
+      <button class="tab-btn"         onclick="goTab('lancar')">Lançar</button>
       <button class="tab-btn"         onclick="goTab('lista')">Lançamentos</button>
-      <button class="tab-btn"         onclick="goTab('relatorio')">Relatório</button>
-      <button class="tab-btn"         onclick="goTab('funcionarios')">Funcionários</button>
-      <button class="tab-btn"         onclick="goTab('config')">Configurações</button>
+      <button class="tab-btn"         onclick="goTab('relatorio')" id="tab-btn-rel">Relatório</button>
+      <button class="tab-btn"         onclick="goTab('funcionarios')" id="tab-btn-emp">Funcionários</button>
+      <button class="tab-btn"         onclick="goTab('config')" id="tab-btn-cfg">Config</button>
     </div>
     <div class="nav-right">
       <span class="pill pill-red"   id="hdr-open">Aberto R$0</span>
       <span class="pill pill-green" id="hdr-paid">Pago R$0</span>
-      <div class="sync-dot loading" id="sync-dot" title="Sincronização"></div>
+      <div class="sync-dot spin" id="sync-dot"></div>
+      <span class="user-badge" id="user-badge" onclick="doLogout()">sair</span>
     </div>
   </div>
 </nav>
 
 <div id="toast"></div>
 
-<main>
+<main id="app-main" style="display:none">
 
-<!-- ══════════════ LANÇAR ══════════════ -->
-<div id="tab-lancar" class="tab-pane active">
+<!-- DASHBOARD -->
+<div id="tab-dashboard" class="tab-pane active">
+  <div class="dash-grid" id="dash-top"></div>
+  <div id="dash-alerts"></div>
+  <div class="card">
+    <div class="card-title">💰 Pendências em aberto por funcionário</div>
+    <div id="dash-pending"></div>
+  </div>
+  <div class="card">
+    <div class="card-title">📅 Últimos lançamentos</div>
+    <div id="dash-recent"></div>
+  </div>
+</div>
+
+<!-- LANÇAR -->
+<div id="tab-lancar" class="tab-pane">
   <div class="card" style="padding:14px 18px">
     <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
       <div><label>Data do dia</label>
@@ -220,7 +272,6 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       </div>
     </div>
   </div>
-
   <div class="card">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
       <div class="card-title" style="margin:0">Funcionários do dia</div>
@@ -232,13 +283,12 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <div class="col-hdr">Saída 1</div>
       <div class="col-hdr">Entrada 2</div>
       <div class="col-hdr">Saída 2</div>
-      <div class="col-hdr" title="Pegou almoço">🍽</div>
+      <div class="col-hdr" title="Almoço">🍽</div>
       <div class="col-hdr">Horas · Total</div>
     </div>
     <div id="bulk-rows"></div>
     <button class="add-row-btn" onclick="addRow()">+ nova linha</button>
   </div>
-
   <div id="day-total-card" class="card" style="display:none;background:var(--green-bg);border-color:var(--green-bd)">
     <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">
       <div><div class="sum-label">Total do dia</div><div class="sum-value" id="dt-val">R$ 0,00</div></div>
@@ -248,7 +298,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   </div>
 </div>
 
-<!-- ══════════════ LISTA ══════════════ -->
+<!-- LISTA -->
 <div id="tab-lista" class="tab-pane">
   <div class="sum-grid">
     <div class="sum-card"><div class="sum-label">Em aberto</div><div class="sum-value" id="s-open">R$ 0</div></div>
@@ -266,8 +316,8 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
           <option value="">Todos</option><option value="open">Aberto</option>
           <option value="paid">Pago</option><option value="partial">Parcial</option>
         </select></div>
-      <div><label>Tipo de dia</label>
-        <select id="f-dtype" onchange="renderList()" style="width:120px">
+      <div><label>Tipo</label>
+        <select id="f-dtype" onchange="renderList()" style="width:110px">
           <option value="">Todos</option><option value="weekday">Semana</option>
           <option value="saturday">Sábado</option><option value="sunday">Domingo</option>
           <option value="holiday">Feriado</option>
@@ -278,14 +328,12 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div id="entry-list"></div>
 </div>
 
-<!-- ══════════════ RELATÓRIO ══════════════ -->
+<!-- RELATÓRIO -->
 <div id="tab-relatorio" class="tab-pane">
   <div class="card" style="padding:12px 16px">
     <div class="filter-row">
       <div><label>Funcionário</label>
-        <select id="r-emp" onchange="renderReport()" style="width:150px">
-          <option value="">Todos</option>
-        </select></div>
+        <select id="r-emp" onchange="renderReport()" style="width:150px"><option value="">Todos</option></select></div>
       <div><label>De</label><input type="date" id="r-from" oninput="renderReport()" style="width:135px"></div>
       <div><label>Até</label><input type="date" id="r-to" oninput="renderReport()" style="width:135px"></div>
       <div><label>Status</label>
@@ -301,19 +349,16 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <table class="rep-table">
         <thead><tr>
           <th>Funcionário</th><th>Data</th><th>Tipo</th><th>Horários</th>
-          <th>Horas</th><th>R$/h</th><th>Total</th><th>Status</th><th>Pago</th>
+          <th>Horas</th><th>Total</th><th>Status</th><th>Pago</th>
         </tr></thead>
         <tbody id="r-body"></tbody>
-        <tfoot><tr>
-          <td colspan="4">Total filtrado</td>
-          <td id="r-tot-h">—</td><td></td><td id="r-tot-v">—</td><td colspan="2"></td>
-        </tr></tfoot>
+        <tfoot><tr><td colspan="4">Total</td><td id="r-tot-h">—</td><td id="r-tot-v">—</td><td colspan="2"></td></tr></tfoot>
       </table>
     </div>
   </div>
 </div>
 
-<!-- ══════════════ FUNCIONÁRIOS ══════════════ -->
+<!-- FUNCIONÁRIOS -->
 <div id="tab-funcionarios" class="tab-pane">
   <div class="card">
     <div class="card-title">Cadastrar funcionário</div>
@@ -329,14 +374,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div id="emp-list"></div>
 </div>
 
-<!-- ══════════════ CONFIGURAÇÕES ══════════════ -->
+<!-- CONFIG -->
 <div id="tab-config" class="tab-pane">
   <div class="card">
-    <div class="card-title">Tabela de valores</div>
-    <p style="font-size:12px;color:var(--text2);margin-bottom:14px">Taxas aplicadas automaticamente conforme o tipo de dia e horário.</p>
-    <table class="rate-tbl">
-      <tbody id="rate-body"></tbody>
-    </table>
+    <div class="card-title">Tabela de valores (R$/hora)</div>
+    <table class="rate-tbl"><tbody id="rate-body"></tbody></table>
     <div class="btns" style="margin-top:14px">
       <button class="btn btn-primary" onclick="saveRates()">Salvar valores</button>
       <button class="btn btn-secondary" onclick="resetRates()">Restaurar padrão</button>
@@ -349,7 +391,6 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <button class="btn btn-secondary" onclick="importJSON()">⬆ Importar JSON</button>
       <button class="btn btn-xs btn-red" onclick="clearAll()">🗑 Apagar tudo</button>
     </div>
-    <p style="font-size:11px;color:var(--text3);margin-top:10px">Dados salvos no Firebase (nuvem). O backup JSON é opcional para segurança extra.</p>
   </div>
 </div>
 
@@ -367,309 +408,321 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 </div>
 
 <script>
-// ═══════════════════════════════════════ FIREBASE CONFIG
-// Projeto gratuito (Spark plan) — sem custo
+// ══════════════════════════ AUTH
+// Hashes SHA-256 de usuario+senha (não ficam em texto claro)
+const USERS = {
+  'andre':  { hash:'a5d4a7b6767ebc2a4f8bcfb0ce34bc2d6a9c82d8280d83e14cd5d70cdc057f0c', role:'admin' },
+  'reymer': { hash:'fde5b9a9dbf64ae17b12b9a9c504da1b2c6e9f49f7cca15c50b170b1cba99687', role:'operator' },
+};
+// role admin = vê tudo, edita tudo
+// role operator = só lança (sem apagar, sem relatório, sem config)
+
+let currentUser = null;
+
+async function sha256(str) {
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+async function doLogin() {
+  const user = document.getElementById('l-user').value.trim().toLowerCase();
+  const pass = document.getElementById('l-pass').value;
+  const err  = document.getElementById('l-err');
+  if (!user || !pass) { err.style.display='block'; err.textContent='Preencha todos os campos.'; return; }
+  const u = USERS[user];
+  if (!u) { err.style.display='block'; err.textContent='Usuário ou senha incorretos.'; return; }
+  const h = await sha256(user + pass);
+  if (h !== u.hash) { err.style.display='block'; err.textContent='Usuário ou senha incorretos.'; return; }
+  err.style.display='none';
+  currentUser = { name: user, role: u.role };
+  sessionStorage.setItem('dp_user', JSON.stringify(currentUser));
+  startApp();
+}
+
+function doLogout() {
+  if (!confirm('Sair do sistema?')) return;
+  sessionStorage.removeItem('dp_user');
+  location.reload();
+}
+
+function checkSession() {
+  try {
+    const s = sessionStorage.getItem('dp_user');
+    if (s) { currentUser = JSON.parse(s); return true; }
+  } catch(e) {}
+  return false;
+}
+
+function applyRole() {
+  const isAdmin = currentUser.role === 'admin';
+  document.getElementById('user-badge').textContent = `${currentUser.name} · sair`;
+  // Esconde abas restritas para operator
+  if (!isAdmin) {
+    document.getElementById('tab-btn-rel').style.display='none';
+    document.getElementById('tab-btn-cfg').style.display='none';
+  }
+}
+
+// ══════════════════════════ FIREBASE
 const FB_CONFIG = {
-    apiKey: "AIzaSyC0IO8wI9tAHgJROEOMOEaTVOuX_0C5ggY",
+  apiKey: "AIzaSyC8IO8wI9tAHgJROEOMOEaTVOuX_8C5ggY",
   authDomain: "diariapro-db915.firebaseapp.com",
   projectId: "diariapro-db915",
 };
 
-// ═══════════════════════════════════════ TAXAS PADRÃO
 const DEF_RATES = {
-  wdBase:   14.00,  // Semana (até 19h)
-  wd19:     16.00,  // Semana 19h–20h
-  wd20:     18.00,  // Semana 20h–21h
-  wd21:     20.00,  // Semana após 21h
-  satBase:  14.00,  // Sábado até 13h30
-  satAfter: 18.00,  // Sábado após 13h30 com manhã
-  satOnly:  14.00,  // Sábado após 13h30 sem manhã
-  sunHol:   20.00,  // Domingo / Feriado
-  pga:      10.00,  // Desconto almoço fixo
+  wdBase:14,wd19:16,wd20:18,wd21:20,
+  satBase:14,satAfter:18,satOnly:14,
+  sunHol:20,pga:10,
 };
 
 const RATE_LABELS = [
-  { key:'wdBase',   label:'Semana (até 19h)',                    unit:'R$/h' },
-  { key:'wd19',     label:'Semana 19h–20h',                      unit:'R$/h' },
-  { key:'wd20',     label:'Semana 20h–21h',                      unit:'R$/h' },
-  { key:'wd21',     label:'Semana após 21h',                     unit:'R$/h' },
-  { key:'satBase',  label:'Sábado até 13h30',                    unit:'R$/h' },
-  { key:'satAfter', label:'Sábado após 13h30 (com manhã)',       unit:'R$/h' },
-  { key:'satOnly',  label:'Sábado após 13h30 (sem manhã)',       unit:'R$/h' },
-  { key:'sunHol',   label:'Domingo / Feriado',                   unit:'R$/h' },
-  { key:'pga',      label:'Desconto almoço — PGA',               unit:'R$ fixo' },
+  {key:'wdBase',  label:'Semana (até 19h)',              unit:'R$/h'},
+  {key:'wd19',    label:'Semana 19h–20h',                unit:'R$/h'},
+  {key:'wd20',    label:'Semana 20h–21h',                unit:'R$/h'},
+  {key:'wd21',    label:'Semana após 21h',               unit:'R$/h'},
+  {key:'satBase', label:'Sábado até 13h30',              unit:'R$/h'},
+  {key:'satAfter',label:'Sábado após 13h30 (com manhã)', unit:'R$/h'},
+  {key:'satOnly', label:'Sábado após 13h30 (sem manhã)', unit:'R$/h'},
+  {key:'sunHol',  label:'Domingo / Feriado',             unit:'R$/h'},
+  {key:'pga',     label:'Desconto almoço — PGA',         unit:'R$ fixo'},
 ];
 
-// ═══════════════════════════════════════ STATE (localStorage fallback)
-let state = { entries:[], employees:[], payments:[], rates:{...DEF_RATES} };
-let db = null;
-let useFirebase = false;
+let state={entries:[],employees:[],payments:[],rates:{...DEF_RATES}};
+let db=null, useFirebase=false;
 
-// ═══════════════════════════════════════ FIREBASE INIT
-function initFirebase() {
-  try {
-    // Check if config has real key (not placeholder)
-    if (FB_CONFIG.apiKey.includes('REPLACE')) {
-      setSyncDot('local');
-      loadLocal();
-      return;
-    }
+function setSyncDot(s){
+  const d=document.getElementById('sync-dot');
+  d.className='sync-dot';
+  if(s==='ok'){d.classList.add('ok');d.title='Sincronizado';}
+  else if(s==='err'){d.classList.add('err');d.title='Erro — dados locais';}
+  else{d.classList.add('spin');d.title='Sincronizando...';}
+}
+
+function startApp() {
+  document.getElementById('login-screen').style.display='none';
+  document.getElementById('app-nav').style.display='block';
+  document.getElementById('app-main').style.display='block';
+  applyRole();
+  initFirebase();
+}
+
+function initFirebase(){
+  try{
     firebase.initializeApp(FB_CONFIG);
-    db = firebase.firestore();
-    useFirebase = true;
-    setSyncDot('loading');
+    db=firebase.firestore();
+    useFirebase=true;
+    setSyncDot('spin');
     loadFirebase();
-  } catch(e) {
-    console.warn('Firebase error, using localStorage', e);
-    setSyncDot('err');
-    loadLocal();
-  }
+  }catch(e){setSyncDot('err');loadLocal();}
 }
 
-function setSyncDot(s) {
-  const d = document.getElementById('sync-dot');
-  d.className = 'sync-dot';
-  if (s==='ok') { d.classList.add('ok'); d.title='Sincronizado com nuvem'; }
-  else if (s==='err') { d.classList.add('err'); d.title='Erro de sincronização — dados locais'; }
-  else if (s==='loading') { d.classList.add('loading'); d.title='Sincronizando...'; }
-  else { d.title='Salvando localmente (configure Firebase para nuvem)'; }
-}
-
-// ═══════════════════════════════════════ FIREBASE LOAD
-async function loadFirebase() {
-  try {
-    const [entSnap, empSnap, paySnap, cfgSnap] = await Promise.all([
+async function loadFirebase(){
+  try{
+    const [e1,e2,e3,e4]=await Promise.all([
       db.collection('entries').get(),
       db.collection('employees').get(),
       db.collection('payments').get(),
       db.collection('config').doc('rates').get(),
     ]);
-    state.entries   = entSnap.docs.map(d => ({id:d.id,...d.data()}));
-    state.employees = empSnap.docs.map(d => ({id:d.id,...d.data()}));
-    state.payments  = paySnap.docs.map(d => ({id:d.id,...d.data()}));
-    if (cfgSnap.exists) state.rates = {...DEF_RATES,...cfgSnap.data()};
+    state.entries  =e1.docs.map(d=>({id:d.id,...d.data()}));
+    state.employees=e2.docs.map(d=>({id:d.id,...d.data()}));
+    state.payments =e3.docs.map(d=>({id:d.id,...d.data()}));
+    if(e4.exists) state.rates={...DEF_RATES,...e4.data()};
     setSyncDot('ok');
     afterLoad();
-  } catch(e) {
-    console.warn('Firebase load failed', e);
-    setSyncDot('err');
-    loadLocal();
-  }
+  }catch(e){setSyncDot('err');loadLocal();}
 }
 
-// ═══════════════════════════════════════ FIREBASE SAVE
-async function saveEntry(entry) {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try {
-    await db.collection('entries').doc(entry.id).set(entry);
-    setSyncDot('ok');
-  } catch(e) { setSyncDot('err'); }
-}
+async function fbSet(col,id,data){saveLocal();if(!useFirebase||!db)return;try{await db.collection(col).doc(id).set(data);setSyncDot('ok');}catch(e){setSyncDot('err');}}
+async function fbDel(col,id){saveLocal();if(!useFirebase||!db)return;try{await db.collection(col).doc(id).delete();setSyncDot('ok');}catch(e){setSyncDot('err');}}
 
-async function deleteEntryDB(id) {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try { await db.collection('entries').doc(id).delete(); setSyncDot('ok'); } catch(e) { setSyncDot('err'); }
-}
-
-async function saveEmpDB(emp) {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try { await db.collection('employees').doc(emp.id).set(emp); setSyncDot('ok'); } catch(e) { setSyncDot('err'); }
-}
-
-async function deleteEmpDB(id) {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try { await db.collection('employees').doc(id).delete(); setSyncDot('ok'); } catch(e) { setSyncDot('err'); }
-}
-
-async function savePayDB(pay) {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try { await db.collection('payments').doc(pay.id).set(pay); setSyncDot('ok'); } catch(e) { setSyncDot('err'); }
-}
-
-async function deletePayDB(id) {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try { await db.collection('payments').doc(id).delete(); setSyncDot('ok'); } catch(e) { setSyncDot('err'); }
-}
-
-async function saveRatesDB() {
-  saveLocal();
-  if (!useFirebase || !db) return;
-  try { await db.collection('config').doc('rates').set(state.rates); setSyncDot('ok'); } catch(e) { setSyncDot('err'); }
-}
-
-// ═══════════════════════════════════════ LOCAL STORAGE
-function saveLocal() {
-  try { localStorage.setItem('diariapro_v2', JSON.stringify(state)); } catch(e) {}
-}
-
-function loadLocal() {
-  try {
-    const s = localStorage.getItem('diariapro_v2');
-    if (s) Object.assign(state, JSON.parse(s));
-  } catch(e) {}
-  if (!state.entries)   state.entries   = [];
-  if (!state.employees) state.employees = [];
-  if (!state.payments)  state.payments  = [];
-  if (!state.rates)     state.rates     = {};
-  for (const k in DEF_RATES) if (state.rates[k] === undefined) state.rates[k] = DEF_RATES[k];
+function saveLocal(){try{localStorage.setItem('diariapro_v2',JSON.stringify(state));}catch(e){}}
+function loadLocal(){
+  try{const s=localStorage.getItem('diariapro_v2');if(s)Object.assign(state,JSON.parse(s));}catch(e){}
+  if(!state.entries)state.entries=[];
+  if(!state.employees)state.employees=[];
+  if(!state.payments)state.payments=[];
+  if(!state.rates)state.rates={};
+  for(const k in DEF_RATES)if(state.rates[k]===undefined)state.rates[k]=DEF_RATES[k];
   afterLoad();
 }
 
-function afterLoad() {
+function afterLoad(){
   updateHeader();
   initBulk();
   renderRates();
+  renderDashboard();
 }
 
-// ═══════════════════════════════════════ UTILS
-function uid() { return Date.now().toString(36)+Math.random().toString(36).slice(2,7); }
-function todayISO() { return new Date().toISOString().slice(0,10); }
-function fmtDate(iso) {
-  if (!iso) return '—';
-  const [y,m,d] = iso.split('-');
-  return `${d}/${m}/${y}`;
-}
-function fmtMoney(v) { return 'R$ '+Number(v).toFixed(2).replace('.',','); }
-function fmtHours(mins) {
-  if (!mins && mins !== 0) return '—';
-  const h = Math.floor(mins/60), m = mins%60;
-  return `${h}h${String(m).padStart(2,'0')}`;
-}
-function toMins(t) {
-  if (!t || !t.includes(':')) return null;
-  const [h,m] = t.split(':').map(Number);
-  return h*60+m;
-}
-function getDayType(iso, holiday) {
-  if (holiday) return 'holiday';
-  const d = new Date(iso+'T12:00:00').getDay();
-  if (d===0) return 'sunday';
-  if (d===6) return 'saturday';
-  return 'weekday';
-}
-function dayLabel(t) {
-  return {weekday:'Semana',saturday:'Sábado',sunday:'Domingo',holiday:'Feriado'}[t]||t;
-}
-function wdName(iso) {
-  return ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(iso+'T12:00:00').getDay()];
-}
-function cap(s) { return s.trim().toLowerCase().replace(/\b\w/g,c=>c.toUpperCase()); }
+// ══════════════════════════ UTILS
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
+function todayISO(){return new Date().toISOString().slice(0,10);}
+function fmtDate(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
+function fmtMoney(v){return'R$ '+Number(v).toFixed(2).replace('.',',');}
+function fmtHours(mins){if(!mins&&mins!==0)return'—';return`${Math.floor(mins/60)}h${String(mins%60).padStart(2,'0')}`;}
+function toMins(t){if(!t||!t.includes(':'))return null;const[h,m]=t.split(':').map(Number);return h*60+m;}
+function getDayType(iso,hol){if(hol)return'holiday';const d=new Date(iso+'T12:00:00').getDay();if(d===0)return'sunday';if(d===6)return'saturday';return'weekday';}
+function dayLabel(t){return{weekday:'Semana',saturday:'Sábado',sunday:'Domingo',holiday:'Feriado'}[t]||t;}
+function wdName(iso){return['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(iso+'T12:00:00').getDay()];}
+function cap(s){return s.trim().toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
 
-// ═══════════════════════════════════════ CÁLCULO POR SEGMENTO
-function calcEntry(e) {
-  const r = state.rates;
-  const dt = e.dayType;
-  let mins = 0;
-
-  // Turno 1
-  const i1 = toMins(e.in1), o1 = toMins(e.out1);
-  if (i1!==null && o1!==null && o1>i1) mins += o1-i1;
-  // Turno 2
-  const i2 = toMins(e.in2), o2 = toMins(e.out2);
-  if (i2!==null && o2!==null && o2>i2) mins += o2-i2;
-
-  let gross = 0;
-
-  if (dt==='sunday' || dt==='holiday') {
-    gross = (mins/60)*r.sunHol;
-  } else if (dt==='saturday') {
-    const bound = 13*60+30;
-    // had morning = any shift starting before 13:30
-    const hadMorning = (i1!==null && i1<bound)||(i2!==null && i2<bound);
-    // calc per shift
-    [[i1,o1],[i2,o2]].forEach(([inn,out]) => {
-      if (inn===null||out===null||out<=inn) return;
-      if (inn<bound) {
-        const end = Math.min(out,bound);
-        gross += ((end-inn)/60)*r.satBase;
-      }
-      if (out>bound) {
-        const start = Math.max(inn,bound);
-        gross += ((out-start)/60)*(hadMorning?r.satAfter:r.satOnly);
-      }
+// ══════════════════════════ CALC
+function calcEntry(e){
+  const r=state.rates,dt=e.dayType;
+  let mins=0;
+  const i1=toMins(e.in1),o1=toMins(e.out1),i2=toMins(e.in2),o2=toMins(e.out2);
+  if(i1!==null&&o1!==null&&o1>i1)mins+=o1-i1;
+  if(i2!==null&&o2!==null&&o2>i2)mins+=o2-i2;
+  let gross=0;
+  if(dt==='sunday'||dt==='holiday'){
+    gross=(mins/60)*r.sunHol;
+  }else if(dt==='saturday'){
+    const bound=13*60+30;
+    const hadMorning=(i1!==null&&i1<bound)||(i2!==null&&i2<bound);
+    [[i1,o1],[i2,o2]].forEach(([inn,out])=>{
+      if(inn===null||out===null||out<=inn)return;
+      if(inn<bound)gross+=((Math.min(out,bound)-inn)/60)*r.satBase;
+      if(out>bound)gross+=((out-Math.max(inn,bound))/60)*(hadMorning?r.satAfter:r.satOnly);
     });
-  } else {
-    // Weekday with time bands
-    const b1=19*60, b2=20*60, b3=21*60;
-    const bands = [[0,b1,r.wdBase],[b1,b2,r.wd19],[b2,b3,r.wd20],[b3,Infinity,r.wd21]];
-    [[i1,o1],[i2,o2]].forEach(([inn,out]) => {
-      if (inn===null||out===null||out<=inn) return;
-      bands.forEach(([bs,be,rate]) => {
-        const lo=Math.max(inn,bs), hi=Math.min(out,be);
-        if (hi>lo) gross += ((hi-lo)/60)*rate;
-      });
+  }else{
+    const bands=[[0,19*60,r.wdBase],[19*60,20*60,r.wd19],[20*60,21*60,r.wd20],[21*60,Infinity,r.wd21]];
+    [[i1,o1],[i2,o2]].forEach(([inn,out])=>{
+      if(inn===null||out===null||out<=inn)return;
+      bands.forEach(([bs,be,rate])=>{const lo=Math.max(inn,bs),hi=Math.min(out,be);if(hi>lo)gross+=((hi-lo)/60)*rate;});
     });
   }
-
-  const pga = e.pga ? r.pga : 0;
-  const final = Math.max(0, gross-pga);
-  return { mins, gross, pga, final };
+  const pga=e.pga?r.pga:0;
+  return{mins,gross,pga,final:Math.max(0,gross-pga)};
 }
 
-function rateForDay(dt) {
-  // Representative rate for display
-  const r = state.rates;
-  if (dt==='sunday'||dt==='holiday') return r.sunHol;
-  if (dt==='saturday') return r.satBase;
-  return r.wdBase;
+// ══════════════════════════ TABS
+function goTab(t){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes(`'${t}'`)));
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+t));
+  if(t==='dashboard')renderDashboard();
+  if(t==='lista'){renderList();updateSummary();}
+  if(t==='relatorio')renderReport();
+  if(t==='funcionarios')renderEmps();
+  if(t==='config')renderRates();
 }
 
-// ═══════════════════════════════════════ TABS
-function goTab(t) {
-  document.querySelectorAll('.tab-btn').forEach(b => {
-    b.classList.toggle('active', b.getAttribute('onclick').includes(`'${t}'`));
+// ══════════════════════════ DASHBOARD
+function renderDashboard(){
+  let open=0,paid=0,totMins=0;
+  state.entries.forEach(e=>{
+    const{final,mins}=calcEntry(e);
+    const p=getPaid(e.id);
+    open+=Math.max(0,final-p);paid+=p;totMins+=mins;
   });
-  document.querySelectorAll('.tab-pane').forEach(p => {
-    p.classList.toggle('active', p.id==='tab-'+t);
+
+  // Mês atual
+  const now=new Date(),ym=todayISO().slice(0,7);
+  const mesEntries=state.entries.filter(e=>e.date.startsWith(ym));
+  const mesVal=mesEntries.reduce((s,e)=>s+calcEntry(e).final,0);
+  const mesDias=[...new Set(mesEntries.map(e=>e.date))].length;
+
+  document.getElementById('dash-top').innerHTML=`
+    <div class="dash-card accent">
+      <div class="sum-label">Total em aberto</div>
+      <div class="sum-value">${fmtMoney(open)}</div>
+      <div class="sum-sub">a pagar</div>
+    </div>
+    <div class="dash-card">
+      <div class="sum-label">Total pago</div>
+      <div class="sum-value" style="color:var(--green)">${fmtMoney(paid)}</div>
+      <div class="sum-sub">histórico completo</div>
+    </div>
+    <div class="dash-card">
+      <div class="sum-label">Custo este mês</div>
+      <div class="sum-value">${fmtMoney(mesVal)}</div>
+      <div class="sum-sub">${mesDias} dias trabalhados</div>
+    </div>
+    <div class="dash-card">
+      <div class="sum-label">Horas totais</div>
+      <div class="sum-value">${fmtHours(totMins)}</div>
+      <div class="sum-sub">${state.entries.length} lançamentos</div>
+    </div>`;
+
+  // Alertas de pendências antigas (>7 dias)
+  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-7);
+  const cutISO=cutoff.toISOString().slice(0,10);
+  const overdue=state.entries.filter(e=>{
+    if(e.status==='paid')return false;
+    const{final}=calcEntry(e);
+    return(final-getPaid(e.id))>0.01&&e.date<cutISO;
   });
-  if (t==='lista') { renderList(); updateSummary(); }
-  if (t==='relatorio') renderReport();
-  if (t==='funcionarios') renderEmps();
-  if (t==='config') renderRates();
+  const alertEl=document.getElementById('dash-alerts');
+  alertEl.innerHTML=overdue.length?`<div class="alert-banner">⚠️ ${overdue.length} lançamento(s) em aberto há mais de 7 dias</div>`:'';
+
+  // Pendências por funcionário
+  const byEmp={};
+  state.entries.forEach(e=>{
+    const{final}=calcEntry(e);
+    const saldo=final-getPaid(e.id);
+    if(saldo<0.01)return;
+    if(!byEmp[e.employee])byEmp[e.employee]={saldo:0,entries:[]};
+    byEmp[e.employee].saldo+=saldo;
+    byEmp[e.employee].entries.push(e);
+  });
+  const pend=document.getElementById('dash-pending');
+  const emps=Object.keys(byEmp).sort((a,b)=>byEmp[b].saldo-byEmp[a].saldo);
+  pend.innerHTML=emps.length?emps.map(n=>{
+    const emp=state.employees.find(x=>x.name===n);
+    return`<div class="pending-item">
+      <div class="pi-name">${n}</div>
+      <div class="pi-days">${byEmp[n].entries.length} dia(s)</div>
+      ${emp?.pix?`<div style="font-size:11px;color:var(--text3)">Pix: ${emp.pix}</div>`:''}
+      <div class="pi-val">${fmtMoney(byEmp[n].saldo)}</div>
+      <button class="btn btn-xs btn-green" onclick="goTab('lista')">Ver</button>
+    </div>`;}).join('')
+  :'<div style="color:var(--text3);font-size:13px;padding:8px 0">✅ Nenhuma pendência em aberto</div>';
+
+  // Últimos 5 lançamentos
+  const recent=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('dash-recent').innerHTML=recent.length?recent.map(e=>{
+    const{mins,final}=calcEntry(e);
+    return`<div class="entry-item">
+      <div><div class="e-name">${e.employee}</div><div class="e-times">${fmtDate(e.date)} · ${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}</div></div>
+      <span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span>
+      <div class="e-val" style="margin-left:auto">${fmtMoney(final)}</div>
+      <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
+    </div>`;}).join('')
+  :'<div style="color:var(--text3);font-size:13px;padding:8px 0">Nenhum lançamento ainda.</div>';
 }
 
-// ═══════════════════════════════════════ BULK ENTRY
-let rows=[], rid=0;
-
-function initBulk() {
-  document.getElementById('bk-date').value = todayISO();
-  onDateChange();
-  rows=[]; rid=0;
+// ══════════════════════════ BULK
+let rows=[],rid=0;
+function initBulk(){
+  document.getElementById('bk-date').value=todayISO();
+  onDateChange();rows=[];rid=0;
   document.getElementById('bulk-rows').innerHTML='';
-  addRow(); addRow(); addRow();
+  addRow();addRow();addRow();
 }
 
-function onDateChange() {
-  const iso = document.getElementById('bk-date').value;
-  if (!iso) return;
-  const hol = document.getElementById('bk-holiday').checked;
-  const dt = getDayType(iso, hol);
-  const badge = document.getElementById('bk-day-badge');
-  const colors = {weekday:'#1d4ed8',saturday:'#6d28d9',sunday:'#c2410c',holiday:'#b91c1c'};
-  badge.innerHTML = `<span style="color:${colors[dt]}">${wdName(iso)} · ${dayLabel(dt)}</span>`;
-  document.querySelectorAll('[data-rid]').forEach(r => recalcRow(r.dataset.rid));
+function onDateChange(){
+  const iso=document.getElementById('bk-date').value;
+  if(!iso)return;
+  const hol=document.getElementById('bk-holiday').checked;
+  const dt=getDayType(iso,hol);
+  const colors={weekday:'#1d4ed8',saturday:'#6d28d9',sunday:'#c2410c',holiday:'#b91c1c'};
+  document.getElementById('bk-day-badge').innerHTML=`<span style="color:${colors[dt]}">${wdName(iso)} · ${dayLabel(dt)}</span>`;
+  document.querySelectorAll('[data-rid]').forEach(r=>recalcRow(r.dataset.rid));
   updateDayTotal();
 }
 
-function addRow(opts={}) {
-  const id = 'r'+(++rid);
-  rows.push({id, name:opts.name||'', in1:opts.in1||'', out1:opts.out1||'', in2:opts.in2||'', out2:opts.out2||'', pga:opts.pga||false});
+function addRow(opts={}){
+  const id='r'+(++rid);
+  rows.push({id,name:opts.name||'',in1:opts.in1||'',out1:opts.out1||'',in2:opts.in2||'',out2:opts.out2||'',pga:opts.pga||false});
   renderRows();
 }
 
-function renderRows() {
-  const c = document.getElementById('bulk-rows');
-  c.innerHTML = '';
-  rows.forEach(r => {
-    const div = document.createElement('div');
-    div.className='bulk-row'; div.dataset.rid=r.id;
-    div.innerHTML = `
+function renderRows(){
+  const c=document.getElementById('bulk-rows');c.innerHTML='';
+  rows.forEach(r=>{
+    const div=document.createElement('div');
+    div.className='bulk-row';div.dataset.rid=r.id;
+    div.innerHTML=`
       <div class="row-name ac-wrap">
         <input type="text" placeholder="Funcionário" value="${r.name}"
           oninput="setF('${r.id}','name',this.value);showAC(this,'${r.id}')"
@@ -680,177 +733,136 @@ function renderRows() {
       <input type="time" value="${r.out1}" oninput="setF('${r.id}','out1',this.value)">
       <input type="time" value="${r.in2}"  oninput="setF('${r.id}','in2',this.value)">
       <input type="time" value="${r.out2}" oninput="setF('${r.id}','out2',this.value)">
-      <label class="chk-label" title="Pegou almoço — desconto R$ ${state.rates.pga.toFixed(2).replace('.',',')}">
+      <label class="chk-label" title="Pegou almoço">
         <input type="checkbox" ${r.pga?'checked':''} onchange="setF('${r.id}','pga',this.checked)">
       </label>
       <div style="display:flex;align-items:center;gap:8px">
         <div class="row-prev" id="prev-${r.id}"></div>
-        <button onclick="removeRow('${r.id}')" title="Remover" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1;padding:2px">✕</button>
+        <button onclick="removeRow('${r.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1">✕</button>
       </div>`;
-    c.appendChild(div);
-    recalcRow(r.id);
+    c.appendChild(div);recalcRow(r.id);
   });
 }
 
-function setF(id, field, val) {
-  const r = rows.find(x=>x.id===id);
-  if (r) { r[field]=val; recalcRow(id); updateDayTotal(); }
+function setF(id,field,val){const r=rows.find(x=>x.id===id);if(r){r[field]=val;recalcRow(id);updateDayTotal();}}
+
+function recalcRow(id){
+  const r=rows.find(x=>x.id===id);if(!r)return;
+  const el=document.getElementById('prev-'+id);if(!el)return;
+  const iso=document.getElementById('bk-date').value;
+  const hol=document.getElementById('bk-holiday').checked;
+  if(!iso||!r.in1||!r.out1){el.textContent='';return;}
+  const{mins,final}=calcEntry({...r,dayType:getDayType(iso,hol)});
+  el.textContent=mins>0?`${fmtHours(mins)} · ${fmtMoney(final)}${r.pga?' 🍽':''}` :'';
 }
 
-function recalcRow(id) {
-  const r = rows.find(x=>x.id===id);
-  if (!r) return;
-  const el = document.getElementById('prev-'+id);
-  if (!el) return;
-  const iso = document.getElementById('bk-date').value;
-  const hol = document.getElementById('bk-holiday').checked;
-  if (!iso || !r.in1 || !r.out1) { el.textContent=''; return; }
-  const {mins,final} = calcEntry({...r, dayType:getDayType(iso,hol)});
-  if (mins>0) {
-    el.className='row-prev';
-    el.textContent = `${fmtHours(mins)} · ${fmtMoney(final)}${r.pga?' 🍽':''}`;
-  } else { el.textContent=''; }
-}
-
-function updateDayTotal() {
-  const iso = document.getElementById('bk-date').value;
-  const hol = document.getElementById('bk-holiday').checked;
-  if (!iso) return;
-  const dt = getDayType(iso,hol);
-  let tMins=0, tVal=0, tEmp=0;
-  rows.forEach(r => {
-    if (!r.name.trim()||!r.in1||!r.out1) return;
-    const {mins,final} = calcEntry({...r,dayType:dt});
-    if (mins>0) { tMins+=mins; tVal+=final; tEmp++; }
+function updateDayTotal(){
+  const iso=document.getElementById('bk-date').value;
+  const hol=document.getElementById('bk-holiday').checked;
+  if(!iso)return;
+  const dt=getDayType(iso,hol);
+  let tM=0,tV=0,tE=0;
+  rows.forEach(r=>{
+    if(!r.name.trim()||!r.in1||!r.out1)return;
+    const{mins,final}=calcEntry({...r,dayType:dt});
+    if(mins>0){tM+=mins;tV+=final;tE++;}
   });
-  const card = document.getElementById('day-total-card');
-  if (tEmp>0) {
+  const card=document.getElementById('day-total-card');
+  if(tE>0){
     card.style.display='block';
-    document.getElementById('dt-val').textContent=fmtMoney(tVal);
-    document.getElementById('dt-hrs').textContent=fmtHours(tMins);
-    document.getElementById('dt-emp').textContent=tEmp;
-  } else { card.style.display='none'; }
+    document.getElementById('dt-val').textContent=fmtMoney(tV);
+    document.getElementById('dt-hrs').textContent=fmtHours(tM);
+    document.getElementById('dt-emp').textContent=tE;
+  }else{card.style.display='none';}
 }
 
-function removeRow(id) {
-  rows=rows.filter(x=>x.id!==id); renderRows(); updateDayTotal();
-}
+function removeRow(id){rows=rows.filter(x=>x.id!==id);renderRows();updateDayTotal();}
 
-function loadPrev() {
+function loadPrev(){
   const sorted=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date));
-  if (!sorted.length) { toast('Nenhum lançamento anterior.'); return; }
-  const last = sorted[0].date;
-  const prev = sorted.filter(e=>e.date===last);
-  rows=[]; rid=0;
-  prev.forEach(e => addRow({name:e.employee,in1:e.in1,out1:e.out1,in2:e.in2,out2:e.out2,pga:e.pga}));
+  if(!sorted.length){toast('Nenhum lançamento anterior.');return;}
+  const last=sorted[0].date;
+  const prev=sorted.filter(e=>e.date===last);
+  rows=[];rid=0;
+  prev.forEach(e=>addRow({name:e.employee,in1:e.in1,out1:e.out1,in2:e.in2,out2:e.out2,pga:e.pga}));
   toast(`${prev.length} funcionário(s) de ${fmtDate(last)} carregados`);
 }
 
-async function saveBulk() {
-  const iso = document.getElementById('bk-date').value;
-  const hol = document.getElementById('bk-holiday').checked;
-  if (!iso) { toast('Informe a data.'); return; }
-  const dt = getDayType(iso,hol);
-  let saved=0, skip=0;
-  for (const r of rows) {
-    if (!r.name.trim()||!r.in1||!r.out1) { skip++; continue; }
-    const emp = cap(r.name.trim());
-    const entry = {
-      id:uid(), date:iso, employee:emp,
-      in1:r.in1, out1:r.out1, in2:r.in2||'', out2:r.out2||'',
-      pga:r.pga, holiday:hol, dayType:dt, status:'open',
-      createdAt:new Date().toISOString()
-    };
-    // Remove duplicate same employee+date
-    const dup = state.entries.find(e=>e.date===iso&&e.employee===emp);
-    if (dup) {
-      state.entries=state.entries.filter(e=>!(e.date===iso&&e.employee===emp));
-      if (useFirebase&&db) { try{ await db.collection('entries').doc(dup.id).delete(); }catch(e){} }
-    }
+async function saveBulk(){
+  const iso=document.getElementById('bk-date').value;
+  const hol=document.getElementById('bk-holiday').checked;
+  if(!iso){toast('Informe a data.');return;}
+  const dt=getDayType(iso,hol);
+  let saved=0,skip=0;
+  for(const r of rows){
+    if(!r.name.trim()||!r.in1||!r.out1){skip++;continue;}
+    const emp=cap(r.name.trim());
+    const entry={id:uid(),date:iso,employee:emp,in1:r.in1,out1:r.out1,in2:r.in2||'',out2:r.out2||'',pga:r.pga,holiday:hol,dayType:dt,status:'open',createdAt:new Date().toISOString(),launchedBy:currentUser.name};
+    const dup=state.entries.find(e=>e.date===iso&&e.employee===emp);
+    if(dup){state.entries=state.entries.filter(e=>!(e.date===iso&&e.employee===emp));if(useFirebase&&db)try{await db.collection('entries').doc(dup.id).delete();}catch(e){}}
     state.entries.push(entry);
-    // Auto-add employee
-    if (!state.employees.find(e=>e.name.toLowerCase()===emp.toLowerCase())) {
-      const ne={id:uid(),name:emp,pix:'',obs:''};
-      state.employees.push(ne);
-      saveEmpDB(ne);
+    if(!state.employees.find(e=>e.name.toLowerCase()===emp.toLowerCase())){
+      const ne={id:uid(),name:emp,pix:'',obs:''};state.employees.push(ne);await fbSet('employees',ne.id,ne);
     }
-    await saveEntry(entry);
-    saved++;
+    await fbSet('entries',entry.id,entry);saved++;
   }
-  updateHeader();
-  toast(`${saved} lançamento(s) salvos!${skip?` (${skip} linhas ignoradas)`:''}`);
-  if (saved>0) {
-    rows=[]; rid=0;
-    document.getElementById('bulk-rows').innerHTML='';
-    document.getElementById('day-total-card').style.display='none';
-    addRow(); addRow(); addRow();
-  }
+  updateHeader();renderDashboard();
+  toast(`${saved} lançamento(s) salvos!${skip?` (${skip} ignoradas)`:''}`);
+  if(saved>0){rows=[];rid=0;document.getElementById('bulk-rows').innerHTML='';document.getElementById('day-total-card').style.display='none';addRow();addRow();addRow();}
 }
 
-// ═══════════════════════════════════════ AUTOCOMPLETE
-function showAC(inp, id) {
+// ══════════════════════════ AUTOCOMPLETE
+function showAC(inp,id){
   const q=inp.value.toLowerCase();
   const list=document.getElementById('ac-'+id);
   const names=state.employees.map(e=>e.name).filter(n=>n.toLowerCase().includes(q));
-  if (!names.length) { list.style.display='none'; return; }
+  if(!names.length){list.style.display='none';return;}
   list.innerHTML=names.map(n=>`<div class="ac-item" onmousedown="pickAC('${id}','${n}')">${n}</div>`).join('');
   list.style.display='block';
 }
-function pickAC(id, name) {
-  const r=rows.find(x=>x.id===id);
-  if (r) { r.name=name; renderRows(); updateDayTotal(); }
-}
-function hideAC(id) {
-  setTimeout(()=>{const l=document.getElementById('ac-'+id);if(l)l.style.display='none';},160);
-}
+function pickAC(id,name){const r=rows.find(x=>x.id===id);if(r){r.name=name;renderRows();updateDayTotal();}}
+function hideAC(id){setTimeout(()=>{const l=document.getElementById('ac-'+id);if(l)l.style.display='none';},160);}
 
-// ═══════════════════════════════════════ ENTRY LIST
-function renderList() {
+// ══════════════════════════ ENTRY LIST
+function getPaid(eid){return state.payments.filter(p=>p.entryId===eid).reduce((s,p)=>s+p.amount,0);}
+
+function renderList(){
   const fname=(document.getElementById('f-name')?.value||'').toLowerCase();
   const ffrom=document.getElementById('f-from')?.value||'';
   const fto=document.getElementById('f-to')?.value||'';
   const fst=document.getElementById('f-status')?.value||'';
   const fdt=document.getElementById('f-dtype')?.value||'';
-
   let entries=[...state.entries];
-  if (fname) entries=entries.filter(e=>e.employee.toLowerCase().includes(fname));
-  if (ffrom) entries=entries.filter(e=>e.date>=ffrom);
-  if (fto)   entries=entries.filter(e=>e.date<=fto);
-  if (fst)   entries=entries.filter(e=>e.status===fst);
-  if (fdt)   entries=entries.filter(e=>e.dayType===fdt);
+  if(fname)entries=entries.filter(e=>e.employee.toLowerCase().includes(fname));
+  if(ffrom)entries=entries.filter(e=>e.date>=ffrom);
+  if(fto)entries=entries.filter(e=>e.date<=fto);
+  if(fst)entries=entries.filter(e=>e.status===fst);
+  if(fdt)entries=entries.filter(e=>e.dayType===fdt);
   entries.sort((a,b)=>b.date.localeCompare(a.date)||a.employee.localeCompare(b.employee));
-
   const c=document.getElementById('entry-list');
-  if (!entries.length) {
-    c.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3)">Nenhum lançamento encontrado.</div>';
-    updateSummary(); return;
-  }
-
-  // Group by date
+  if(!entries.length){c.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3)">Nenhum lançamento encontrado.</div>';updateSummary();return;}
   const grouped={};
-  entries.forEach(e=>{ if(!grouped[e.date])grouped[e.date]=[]; grouped[e.date].push(e); });
-
+  entries.forEach(e=>{if(!grouped[e.date])grouped[e.date]=[];grouped[e.date].push(e);});
+  const isAdmin=currentUser.role==='admin';
   let html='';
   Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
     const grp=grouped[date];
     const dayTot=grp.reduce((s,e)=>s+calcEntry(e).final,0);
-    const dt=grp[0].dayType;
     html+=`<div style="margin-bottom:18px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:0 2px">
         <span style="font-size:13px;font-weight:700;color:var(--text2)">${fmtDate(date)} · ${wdName(date)}</span>
-        <span class="dtag dtag-${dt}">${dayLabel(dt)}</span>
-        <span style="margin-left:auto;font-size:12px;color:var(--text2)">Total do dia: <strong>${fmtMoney(dayTot)}</strong></span>
+        <span class="dtag dtag-${grp[0].dayType}">${dayLabel(grp[0].dayType)}</span>
+        <span style="margin-left:auto;font-size:12px;color:var(--text2)">Total: <strong>${fmtMoney(dayTot)}</strong></span>
       </div>`;
     grp.forEach(e=>{
-      const {mins,final}=calcEntry(e);
+      const{mins,final}=calcEntry(e);
       const paid=getPaid(e.id);
       const saldo=final-paid;
-      const slbl={open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]||'Aberto';
-      const times=`${e.in1}–${e.out1}${e.in2?` / ${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}`;
+      const slbl={open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status];
       html+=`<div class="entry-item">
         <div style="min-width:100px">
           <div class="e-name">${e.employee}</div>
-          <div class="e-times">${times}</div>
+          <div class="e-times">${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</div>
           <div class="e-hrs">${fmtHours(mins)}</div>
         </div>
         <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto">
@@ -859,73 +871,58 @@ function renderList() {
           ${saldo>0.01?`<span style="font-size:11px;color:var(--amber)">Saldo: ${fmtMoney(saldo)}</span>`:''}
         </div>
         <div style="display:flex;gap:5px">
-          <button class="btn btn-xs btn-green" onclick="openPay('${e.id}')">💰 Pagar</button>
-          <button class="btn btn-xs btn-secondary" onclick="delEntry('${e.id}')" style="color:var(--red)">✕</button>
+          ${isAdmin?`<button class="btn btn-xs btn-green" onclick="openPay('${e.id}')">💰 Pagar</button>`:''}
+          ${isAdmin?`<button class="btn btn-xs btn-secondary" onclick="delEntry('${e.id}')" style="color:var(--red)">✕</button>`:''}
         </div>
       </div>`;
     });
     html+='</div>';
   });
-  c.innerHTML=html;
-  updateSummary();
+  c.innerHTML=html;updateSummary();
 }
 
-function getPaid(eid) {
-  return state.payments.filter(p=>p.entryId===eid).reduce((s,p)=>s+p.amount,0);
-}
-
-async function delEntry(id) {
-  if (!confirm('Remover este lançamento?')) return;
+async function delEntry(id){
+  if(currentUser.role!=='admin'){toast('Sem permissão.');return;}
+  if(!confirm('Remover este lançamento?'))return;
   state.entries=state.entries.filter(e=>e.id!==id);
   state.payments=state.payments.filter(p=>p.entryId!==id);
-  await deleteEntryDB(id);
-  renderList(); updateHeader();
+  await fbDel('entries',id);
+  renderList();updateHeader();renderDashboard();
 }
 
-function clearF() {
+function clearF(){
   ['f-name','f-from','f-to'].forEach(i=>document.getElementById(i).value='');
   ['f-status','f-dtype'].forEach(i=>document.getElementById(i).value='');
   renderList();
 }
 
-function updateSummary() {
+function updateSummary(){
   let open=0,paid=0;
-  state.entries.forEach(e=>{
-    const {final}=calcEntry(e);
-    const p=getPaid(e.id);
-    open+=Math.max(0,final-p);
-    paid+=p;
-  });
+  state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
   document.getElementById('s-open').textContent=fmtMoney(open);
   document.getElementById('s-paid').textContent=fmtMoney(paid);
   document.getElementById('s-total').textContent=fmtMoney(open+paid);
   document.getElementById('s-count').textContent=state.entries.length;
 }
 
-function updateHeader() {
+function updateHeader(){
   let open=0,paid=0;
-  state.entries.forEach(e=>{
-    const {final}=calcEntry(e);
-    const p=getPaid(e.id);
-    open+=Math.max(0,final-p); paid+=p;
-  });
+  state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
   document.getElementById('hdr-open').textContent=`Aberto ${fmtMoney(open)}`;
   document.getElementById('hdr-paid').textContent=`Pago ${fmtMoney(paid)}`;
 }
 
-// ═══════════════════════════════════════ PAGAMENTO
+// ══════════════════════════ PAGAMENTO
 let payingId=null;
-
-function openPay(eid) {
+function openPay(eid){
+  if(currentUser.role!=='admin'){toast('Sem permissão.');return;}
   payingId=eid;
-  const e=state.entries.find(x=>x.id===eid);
-  if (!e) return;
-  const {final}=calcEntry(e);
+  const e=state.entries.find(x=>x.id===eid);if(!e)return;
+  const{final}=calcEntry(e);
   const paid=getPaid(eid);
   const saldo=Math.max(0,final-paid);
   const emp=state.employees.find(x=>x.name.toLowerCase()===e.employee.toLowerCase());
   const history=state.payments.filter(p=>p.entryId===eid).sort((a,b)=>b.date.localeCompare(a.date));
-
   document.getElementById('modal-title').textContent=`Pagamento — ${e.employee} · ${fmtDate(e.date)}`;
   document.getElementById('modal-body').innerHTML=`
     <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
@@ -938,12 +935,12 @@ function openPay(eid) {
       <div><label>Valor (R$)</label><input type="number" id="p-amt" value="${saldo.toFixed(2)}" step="0.01" min="0"></div>
       <div><label>Data</label><input type="date" id="p-date" value="${todayISO()}"></div>
     </div>
-    <div style="margin-bottom:14px"><label>Observação / comprovante</label><input type="text" id="p-obs" placeholder="Número da transação, observação..."></div>
+    <div style="margin-bottom:14px"><label>Observação / comprovante</label><input type="text" id="p-obs" placeholder="Nº da transação, observação..."></div>
     <div class="btns" style="margin-bottom:16px">
       <button class="btn btn-green" onclick="confirmPay()">✓ Confirmar pagamento</button>
       <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
     </div>
-    ${history.length?`<hr><div style="font-size:12px;font-weight:700;color:var(--text2);margin:10px 0 6px">Histórico de pagamentos</div>
+    ${history.length?`<hr><div style="font-size:12px;font-weight:700;color:var(--text2);margin:10px 0 6px">Histórico</div>
     ${history.map(p=>`<div class="pay-row">
       <span>${fmtDate(p.date)}</span>
       <span style="font-weight:700;color:var(--green)">${fmtMoney(p.amount)}</span>
@@ -953,93 +950,70 @@ function openPay(eid) {
   document.getElementById('pay-modal').classList.add('open');
 }
 
-async function confirmPay() {
+async function confirmPay(){
   const amt=parseFloat(document.getElementById('p-amt').value);
   const date=document.getElementById('p-date').value;
   const obs=document.getElementById('p-obs').value;
-  if (!amt||amt<=0) { toast('Informe um valor válido.'); return; }
-  if (!date) { toast('Informe a data.'); return; }
-  const pay={id:uid(),entryId:payingId,amount:amt,date,obs};
+  if(!amt||amt<=0){toast('Informe um valor válido.');return;}
+  if(!date){toast('Informe a data.');return;}
+  const pay={id:uid(),entryId:payingId,amount:amt,date,obs,paidBy:currentUser.name};
   state.payments.push(pay);
   updateEntryStatus(payingId);
-  await savePayDB(pay);
-  closeModal();
-  renderList(); updateHeader();
+  await fbSet('payments',pay.id,pay);
+  closeModal();renderList();updateHeader();renderDashboard();
   toast('Pagamento registrado!');
 }
 
-async function delPay(pid) {
-  if (!confirm('Remover este pagamento?')) return;
+async function delPay(pid){
   const p=state.payments.find(x=>x.id===pid);
   state.payments=state.payments.filter(x=>x.id!==pid);
-  if (p) updateEntryStatus(p.entryId);
-  await deletePayDB(pid);
-  openPay(payingId);
-  renderList(); updateHeader();
+  if(p)updateEntryStatus(p.entryId);
+  await fbDel('payments',pid);
+  openPay(payingId);renderList();updateHeader();
 }
 
-function updateEntryStatus(eid) {
-  const e=state.entries.find(x=>x.id===eid);
-  if (!e) return;
-  const {final}=calcEntry(e);
-  const paid=getPaid(eid);
+function updateEntryStatus(eid){
+  const e=state.entries.find(x=>x.id===eid);if(!e)return;
+  const{final}=calcEntry(e);const paid=getPaid(eid);
   e.status=paid>=final-0.01?'paid':paid>0?'partial':'open';
-  saveEntry(e);
+  fbSet('entries',e.id,e);
 }
 
-function closeModal() {
-  document.getElementById('pay-modal').classList.remove('open');
-  payingId=null;
-}
+function closeModal(){document.getElementById('pay-modal').classList.remove('open');payingId=null;}
 
-// ═══════════════════════════════════════ REPORT
-function renderReport() {
-  const emp=document.getElementById('r-emp');
-  const cur=emp.value;
-  emp.innerHTML='<option value="">Todos</option>'+
-    state.employees.map(e=>`<option value="${e.name}" ${e.name===cur?'selected':''}>${e.name}</option>`).join('');
-
-  const eFilter=emp.value, fFrom=document.getElementById('r-from').value,
-        fTo=document.getElementById('r-to').value, fSt=document.getElementById('r-status').value;
-
+// ══════════════════════════ REPORT
+function renderReport(){
+  const sel=document.getElementById('r-emp');
+  const cur=sel.value;
+  sel.innerHTML='<option value="">Todos</option>'+state.employees.map(e=>`<option value="${e.name}" ${e.name===cur?'selected':''}>${e.name}</option>`).join('');
+  const eF=sel.value,fF=document.getElementById('r-from').value,tF=document.getElementById('r-to').value,sF=document.getElementById('r-status').value;
   let entries=[...state.entries];
-  if (eFilter) entries=entries.filter(e=>e.employee===eFilter);
-  if (fFrom)   entries=entries.filter(e=>e.date>=fFrom);
-  if (fTo)     entries=entries.filter(e=>e.date<=fTo);
-  if (fSt)     entries=entries.filter(e=>e.status===fSt);
+  if(eF)entries=entries.filter(e=>e.employee===eF);
+  if(fF)entries=entries.filter(e=>e.date>=fF);
+  if(tF)entries=entries.filter(e=>e.date<=tF);
+  if(sF)entries=entries.filter(e=>e.status===sF);
   entries.sort((a,b)=>b.date.localeCompare(a.date)||a.employee.localeCompare(b.employee));
-
-  let totM=0, totV=0;
+  let totM=0,totV=0;
   document.getElementById('r-body').innerHTML=entries.map(e=>{
-    const {mins,final}=calcEntry(e);
-    const paid=getPaid(e.id);
-    totM+=mins; totV+=final;
-    const times=`${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}`;
-    return `<tr>
-      <td>${e.employee}</td>
-      <td>${fmtDate(e.date)}</td>
+    const{mins,final}=calcEntry(e);const paid=getPaid(e.id);
+    totM+=mins;totV+=final;
+    return`<tr>
+      <td>${e.employee}</td><td>${fmtDate(e.date)}</td>
       <td><span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span></td>
-      <td style="font-family:monospace;font-size:12px">${times}${e.pga?' 🍽':''}</td>
-      <td>${fmtHours(mins)}</td>
-      <td style="color:var(--text2)">${rateForDay(e.dayType).toFixed(2)}</td>
-      <td><strong>${fmtMoney(final)}</strong></td>
+      <td style="font-family:monospace;font-size:12px">${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</td>
+      <td>${fmtHours(mins)}</td><td><strong>${fmtMoney(final)}</strong></td>
       <td><span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span></td>
       <td style="color:var(--green)">${paid>0?fmtMoney(paid):'—'}</td>
     </tr>`;
-  }).join('')||'<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--text3)">Nenhum dado.</td></tr>';
-
+  }).join('')||'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)">Nenhum dado.</td></tr>';
   document.getElementById('r-tot-h').textContent=fmtHours(totM);
   document.getElementById('r-tot-v').textContent=fmtMoney(totV);
-
-  // By employee summary
   const byEmp={};
   entries.forEach(e=>{
-    if (!byEmp[e.employee]) byEmp[e.employee]={mins:0,val:0,paid:0,count:0};
-    const {mins,final}=calcEntry(e);
-    byEmp[e.employee].mins+=mins;
-    byEmp[e.employee].val+=final;
-    byEmp[e.employee].paid+=getPaid(e.id);
-    byEmp[e.employee].count++;
+    if(!byEmp[e.employee])byEmp[e.employee]={mins:0,val:0,paid:0,count:0};
+    const{mins,final}=calcEntry(e);
+    byEmp[e.employee].mins+=mins;byEmp[e.employee].val+=final;
+    byEmp[e.employee].paid+=getPaid(e.id);byEmp[e.employee].count++;
   });
   const emps=Object.keys(byEmp);
   document.getElementById('r-by-emp').innerHTML=emps.length>1?emps.map(n=>`
@@ -1052,35 +1026,33 @@ function renderReport() {
     </div>`).join(''):'';
 }
 
-// ═══════════════════════════════════════ EMPLOYEES
-async function saveEmp() {
+// ══════════════════════════ EMPLOYEES
+async function saveEmp(){
   const name=cap(document.getElementById('e-name').value.trim());
   const pix=document.getElementById('e-pix').value.trim();
   const obs=document.getElementById('e-obs').value.trim();
-  if (!name) { toast('Informe o nome.'); return; }
-  if (state.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())) { toast('Já cadastrado.'); return; }
+  if(!name){toast('Informe o nome.');return;}
+  if(state.employees.find(e=>e.name.toLowerCase()===name.toLowerCase())){toast('Já cadastrado.');return;}
   const emp={id:uid(),name,pix,obs};
   state.employees.push(emp);
-  await saveEmpDB(emp);
+  await fbSet('employees',emp.id,emp);
   document.getElementById('e-name').value='';
   document.getElementById('e-pix').value='';
   document.getElementById('e-obs').value='';
-  renderEmps();
-  toast('Funcionário salvo!');
+  renderEmps();toast('Funcionário salvo!');
 }
 
-function renderEmps() {
+function renderEmps(){
   const c=document.getElementById('emp-list');
-  if (!state.employees.length) {
-    c.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Nenhum funcionário cadastrado.</div>'; return;
-  }
+  if(!state.employees.length){c.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Nenhum funcionário cadastrado.</div>';return;}
+  const isAdmin=currentUser.role==='admin';
   c.innerHTML=state.employees.map(e=>{
     const ents=state.entries.filter(x=>x.employee===e.name);
     const tVal=ents.reduce((s,x)=>s+calcEntry(x).final,0);
     const tPaid=ents.reduce((s,x)=>s+getPaid(x.id),0);
     const saldo=tVal-tPaid;
     const ini=e.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
-    return `<div class="emp-card">
+    return`<div class="emp-card">
       <div class="emp-avatar">${ini}</div>
       <div class="emp-info">
         <div class="emp-name">${e.name}</div>
@@ -1093,127 +1065,90 @@ function renderEmps() {
         <div class="emp-stat"><span class="sl">Pago</span><span class="sv" style="color:var(--green)">${fmtMoney(tPaid)}</span></div>
         <div class="emp-stat"><span class="sl">Saldo</span><span class="sv" style="color:${saldo>0.01?'var(--red)':'var(--green)'}">${fmtMoney(saldo)}</span></div>
       </div>
-      <div class="btns" style="margin-left:auto">
+      ${isAdmin?`<div class="btns" style="margin-left:auto">
         <button class="btn btn-secondary btn-sm" onclick="editEmp('${e.id}')">Editar</button>
         <button class="btn btn-xs" style="color:var(--red)" onclick="removeEmp('${e.id}')">✕</button>
-      </div>
+      </div>`:''}
     </div>`;
   }).join('');
 }
 
-async function editEmp(id) {
-  const e=state.employees.find(x=>x.id===id);
-  if (!e) return;
-  const n=prompt('Nome:',e.name); if (!n) return;
+async function editEmp(id){
+  const e=state.employees.find(x=>x.id===id);if(!e)return;
+  const n=prompt('Nome:',e.name);if(!n)return;
   const p=prompt('Chave Pix:',e.pix);
-  e.name=cap(n.trim()); e.pix=(p||'').trim();
-  await saveEmpDB(e);
-  renderEmps();
+  e.name=cap(n.trim());e.pix=(p||'').trim();
+  await fbSet('employees',e.id,e);renderEmps();
 }
 
-async function removeEmp(id) {
+async function removeEmp(id){
   const e=state.employees.find(x=>x.id===id);
-  if (!e||!confirm(`Remover ${e.name}? Lançamentos mantidos.`)) return;
+  if(!e||!confirm(`Remover ${e.name}?`))return;
   state.employees=state.employees.filter(x=>x.id!==id);
-  await deleteEmpDB(id);
-  renderEmps();
+  await fbDel('employees',id);renderEmps();
 }
 
-// ═══════════════════════════════════════ RATES
-function renderRates() {
+// ══════════════════════════ RATES
+function renderRates(){
   document.getElementById('rate-body').innerHTML=RATE_LABELS.map(({key,label,unit})=>`
-    <tr>
-      <td>${label}</td>
-      <td><input type="number" id="rt-${key}" value="${Number(state.rates[key]).toFixed(2)}" step="0.50" min="0"> ${unit}</td>
+    <tr><td>${label}</td>
+    <td><input type="number" id="rt-${key}" value="${Number(state.rates[key]).toFixed(2)}" step="0.50" min="0"> ${unit}</td>
     </tr>`).join('');
 }
 
-async function saveRates() {
-  RATE_LABELS.forEach(({key})=>{
-    const v=parseFloat(document.getElementById('rt-'+key)?.value);
-    if (!isNaN(v)) state.rates[key]=v;
-  });
-  await saveRatesDB();
-  toast('Valores salvos!');
+async function saveRates(){
+  RATE_LABELS.forEach(({key})=>{const v=parseFloat(document.getElementById('rt-'+key)?.value);if(!isNaN(v))state.rates[key]=v;});
+  await fbSet('config','rates',state.rates);toast('Valores salvos!');
 }
 
-async function resetRates() {
-  if (!confirm('Restaurar valores padrão?')) return;
+async function resetRates(){
+  if(!confirm('Restaurar valores padrão?'))return;
   state.rates={...DEF_RATES};
-  await saveRatesDB();
-  renderRates();
-  toast('Valores restaurados.');
+  await fbSet('config','rates',state.rates);
+  renderRates();toast('Restaurado.');
 }
 
-// ═══════════════════════════════════════ EXPORT
-function exportCSV() {
-  const entries=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date));
-  const rows2=[['Funcionário','Data','Dia','Tipo','E1','S1','E2','S2','Horas','Total','PGA','Final','Pago','Saldo','Status']];
-  entries.forEach(e=>{
-    const {mins,gross,pga,final}=calcEntry(e);
-    const paid=getPaid(e.id);
-    rows2.push([e.employee,fmtDate(e.date),wdName(e.date),dayLabel(e.dayType),
-      e.in1,e.out1,e.in2||'',e.out2||'',fmtHours(mins),
-      gross.toFixed(2),pga.toFixed(2),final.toFixed(2),
-      paid.toFixed(2),(final-paid).toFixed(2),e.status]);
+// ══════════════════════════ EXPORT
+function exportCSV(){
+  const rows2=[['Funcionário','Data','Dia','Tipo','E1','S1','E2','S2','Horas','Total','PGA','Final','Pago','Saldo','Status','Lançado por']];
+  [...state.entries].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{
+    const{mins,gross,pga,final}=calcEntry(e);const paid=getPaid(e.id);
+    rows2.push([e.employee,fmtDate(e.date),wdName(e.date),dayLabel(e.dayType),e.in1,e.out1,e.in2||'',e.out2||'',fmtHours(mins),gross.toFixed(2),pga.toFixed(2),final.toFixed(2),paid.toFixed(2),(final-paid).toFixed(2),e.status,e.launchedBy||'']);
   });
   dl(rows2.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n'),'diaristas.csv','text/csv');
   toast('CSV exportado!');
 }
 
-function exportJSON() {
-  dl(JSON.stringify(state,null,2),'backup-diariapro.json','application/json');
-  toast('Backup exportado!');
-}
+function exportJSON(){dl(JSON.stringify(state,null,2),'backup-diariapro.json','application/json');toast('Backup exportado!');}
 
-function importJSON() {
-  const inp=document.createElement('input');
-  inp.type='file'; inp.accept='.json';
+function importJSON(){
+  const inp=document.createElement('input');inp.type='file';inp.accept='.json';
   inp.onchange=ev=>{
     const fr=new FileReader();
-    fr.onload=e=>{
-      try {
-        const data=JSON.parse(e.target.result);
-        if (confirm('Isso vai substituir todos os dados. Continuar?')) {
-          Object.assign(state,data); saveLocal(); location.reload();
-        }
-      } catch(e){ toast('Arquivo inválido.'); }
-    };
+    fr.onload=e=>{try{const data=JSON.parse(e.target.result);if(confirm('Substituir todos os dados?')){Object.assign(state,data);saveLocal();location.reload();}}catch(e){toast('Arquivo inválido.');}};
     fr.readAsText(ev.target.files[0]);
-  };
-  inp.click();
+  };inp.click();
 }
 
-async function clearAll() {
-  if (!confirm('APAGAR todos os dados? Isso não pode ser desfeito!')) return;
+async function clearAll(){
+  if(currentUser.role!=='admin'){toast('Sem permissão.');return;}
+  if(!confirm('APAGAR TUDO? Não pode ser desfeito!'))return;
   state={entries:[],employees:[],payments:[],rates:{...DEF_RATES}};
   saveLocal();
-  if (useFirebase&&db) {
-    const cols=['entries','employees','payments'];
-    for (const col of cols) {
-      const snap=await db.collection(col).get();
-      for (const doc of snap.docs) await doc.ref.delete();
-    }
-  }
+  if(useFirebase&&db){const cols=['entries','employees','payments'];for(const col of cols){const s=await db.collection(col).get();for(const d of s.docs)await d.ref.delete();}}
   location.reload();
 }
 
-function dl(content,filename,mime) {
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([content],{type:mime}));
-  a.download=filename; a.click();
+function dl(content,filename,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();}
+
+// ══════════════════════════ TOAST
+function toast(msg,dur=3000){
+  const el=document.getElementById('toast');el.textContent=msg;el.style.opacity='1';
+  clearTimeout(toast._t);toast._t=setTimeout(()=>el.style.opacity='0',dur);
 }
 
-// ═══════════════════════════════════════ TOAST
-function toast(msg,dur=3000) {
-  const el=document.getElementById('toast');
-  el.textContent=msg; el.style.opacity='1';
-  clearTimeout(toast._t);
-  toast._t=setTimeout(()=>el.style.opacity='0',dur);
-}
-
-// ═══════════════════════════════════════ BOOT
-initFirebase();
+// ══════════════════════════ BOOT
+if(checkSession()){startApp();}
 </script>
 </body>
 </html>
