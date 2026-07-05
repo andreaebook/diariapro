@@ -2,7 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0"/>
 <title>Diari·Pro</title>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -42,55 +42,56 @@ nav{background:var(--navy);position:sticky;top:0;z-index:100;box-shadow:0 2px 8p
 .nav-brand span{color:#93c5fd}
 .nav-tabs{display:flex;overflow-x:auto;flex:1;scrollbar-width:none}
 .nav-tabs::-webkit-scrollbar{display:none}
-.tab-btn{padding:13px 13px;font-size:13px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s}
+.tab-btn{padding:13px 12px;font-size:13px;font-weight:500;color:rgba(255,255,255,.5);background:none;border:none;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .15s}
 .tab-btn:hover{color:rgba(255,255,255,.9)}
 .tab-btn.active{color:#fff;border-bottom-color:#93c5fd}
 .nav-right{display:flex;gap:6px;align-items:center;flex-shrink:0;padding-left:8px}
 .pill{font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;white-space:nowrap}
 .pill-red{background:#ef4444;color:#fff}
 .pill-green{background:#22c55e;color:#fff}
-.sync-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:#94a3b8;flex-shrink:0;transition:background .3s}
 .sync-dot.ok{background:#22c55e}
 .sync-dot.err{background:#ef4444}
 .sync-dot.spin{background:#f59e0b;animation:blink 1s infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-.user-badge{font-size:11px;color:rgba(255,255,255,.6);padding:3px 8px;border:1px solid rgba(255,255,255,.2);border-radius:20px;cursor:pointer}
+.user-badge{font-size:11px;color:rgba(255,255,255,.6);padding:3px 8px;border:1px solid rgba(255,255,255,.2);border-radius:20px;cursor:pointer;white-space:nowrap}
 .user-badge:hover{color:#fff;border-color:rgba(255,255,255,.5)}
 @media(max-width:600px){.nav-right .pill{display:none}}
 
 /* LAYOUT */
-main{max-width:1140px;margin:0 auto;padding:18px 14px 80px}
+main{max-width:1140px;margin:0 auto;padding:16px 12px 100px}
 .tab-pane{display:none}.tab-pane.active{display:block}
 
 /* CARDS */
-.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:18px 20px;margin-bottom:14px}
-.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:var(--shadow);padding:16px 18px;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:600;color:var(--text);margin-bottom:12px;display:flex;align-items:center;gap:8px}
 
 /* FORMS */
 label{display:block;font-size:11px;font-weight:600;color:var(--text3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.04em}
 input[type=text],input[type=date],input[type=time],input[type=number],input[type=password],select,textarea{
-  width:100%;padding:7px 10px;border:1px solid var(--border2);border-radius:var(--radius);
-  font-size:13px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;font-family:inherit
+  width:100%;padding:8px 10px;border:1px solid var(--border2);border-radius:var(--radius);
+  font-size:14px;background:var(--surface);color:var(--text);outline:none;transition:border-color .15s;font-family:inherit
 }
 input:focus,select:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(29,78,216,.1)}
-input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
+input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:pointer;flex-shrink:0}
 .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
-@media(max-width:640px){.grid-2,.grid-3{grid-template-columns:1fr 1fr}}
-@media(max-width:400px){.grid-2,.grid-3{grid-template-columns:1fr}}
+@media(max-width:600px){.grid-2,.grid-3{grid-template-columns:1fr 1fr}}
+@media(max-width:380px){.grid-2,.grid-3{grid-template-columns:1fr}}
 
 /* BUTTONS */
-.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--radius);font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:inherit;line-height:1}
+.btn{display:inline-flex;align-items:center;gap:5px;padding:8px 16px;border-radius:var(--radius);font-size:14px;font-weight:500;cursor:pointer;border:none;transition:all .15s;font-family:inherit;line-height:1;touch-action:manipulation}
 .btn-primary{background:var(--accent);color:#fff}.btn-primary:hover{background:#1e40af}
 .btn-secondary{background:var(--surface);color:var(--text2);border:1px solid var(--border2)}.btn-secondary:hover{background:var(--surface2)}
 .btn-green{background:var(--green);color:#fff}.btn-green:hover{background:#166534}
+.btn-amber{background:var(--amber);color:#fff}.btn-amber:hover{background:#92400e}
 .btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#991b1b}
-.btn-sm{padding:5px 10px;font-size:12px}
-.btn-xs{padding:3px 7px;font-size:11px;border-radius:4px}
+.btn-sm{padding:6px 12px;font-size:13px}
+.btn-xs{padding:4px 8px;font-size:12px;border-radius:5px}
 .btns{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 
 /* STATUS */
-.status{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:20px}
+.status{display:inline-block;font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px}
 .status-open{background:var(--amber-bg);color:var(--amber);border:1px solid var(--amber-bd)}
 .status-paid{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
 .status-partial{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-bd)}
@@ -102,43 +103,54 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 .dtag-sunday{background:#fff7ed;color:#c2410c}
 .dtag-holiday{background:#fef2f2;color:#b91c1c}
 
-/* SUMMARY */
-.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:16px}
+/* SUMMARY CARDS */
+.sum-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:10px;margin-bottom:14px}
 .sum-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px}
-.sum-label{font-size:11px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.04em;margin-bottom:3px}
+.sum-card.navy{background:var(--navy);border-color:var(--navy)}
+.sum-card.navy .sum-label{color:rgba(255,255,255,.6)}
+.sum-card.navy .sum-value{color:#fff}
+.sum-card.navy .sum-sub{color:rgba(255,255,255,.5)}
+.sum-label{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.05em;margin-bottom:3px}
 .sum-value{font-size:20px;font-weight:700;color:var(--text);line-height:1.1}
 .sum-sub{font-size:11px;color:var(--text2);margin-top:2px}
 
-/* BULK */
-.bulk-header-row{display:grid;grid-template-columns:180px 78px 78px 78px 78px 34px 1fr;gap:6px;padding:0 4px;margin-bottom:4px}
-.bulk-row{display:grid;grid-template-columns:180px 78px 78px 78px 78px 34px 1fr;gap:6px;align-items:center;margin-bottom:6px}
-@media(max-width:720px){.bulk-header-row{display:none}.bulk-row{grid-template-columns:1fr 1fr 1fr 1fr 1fr 28px}.bulk-row .row-name{grid-column:1/-1}}
-.col-hdr{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:0 3px}
-.bulk-row input[type=time]{padding:5px;font-size:12px}
+/* BULK ENTRY */
+.bulk-hdr{display:grid;grid-template-columns:1fr 72px 72px 72px 72px 28px 28px 110px;gap:5px;padding:0 2px;margin-bottom:4px}
+.bulk-row{display:grid;grid-template-columns:1fr 72px 72px 72px 72px 28px 28px 110px;gap:5px;align-items:center;margin-bottom:5px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 8px}
+.bulk-row.sel{border-color:var(--accent);background:var(--accent-bg)}
+@media(max-width:700px){
+  .bulk-hdr{display:none}
+  .bulk-row{grid-template-columns:1fr 1fr 1fr 1fr;gap:6px;padding:10px}
+  .bulk-row .row-name{grid-column:1/-1}
+  .bulk-row .row-prev{grid-column:1/-1;text-align:center;font-size:13px}
+}
+.col-hdr{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:0 2px}
+.bulk-row input[type=time]{padding:5px 4px;font-size:13px}
 .row-prev{font-size:12px;font-weight:700;color:var(--green);white-space:nowrap}
-.add-row-btn{width:100%;margin-top:6px;padding:7px 0;background:none;border:1px dashed var(--border2);border-radius:var(--radius);font-size:12px;color:var(--text3);cursor:pointer;transition:all .15s}
+.add-row-btn{width:100%;margin-top:6px;padding:8px 0;background:none;border:1px dashed var(--border2);border-radius:var(--radius);font-size:13px;color:var(--text3);cursor:pointer;transition:all .15s}
 .add-row-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-bg)}
-.chk-label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:12px;color:var(--text2);user-select:none}
+.chk-label{display:flex;align-items:center;gap:5px;cursor:pointer;font-size:13px;color:var(--text2);user-select:none}
 
-/* ENTRY */
-.entry-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:11px 14px;margin-bottom:7px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;transition:box-shadow .15s}
+/* ENTRY LIST */
+.entry-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:7px;display:flex;flex-wrap:wrap;align-items:center;gap:8px;transition:all .15s;cursor:default}
 .entry-item:hover{box-shadow:0 2px 10px rgba(0,0,0,.07)}
-.e-name{font-weight:700;font-size:14px;min-width:90px}
+.entry-item.sel{border-color:var(--accent);background:var(--accent-bg)}
+.e-chk{flex-shrink:0}
+.e-name{font-weight:700;font-size:14px;min-width:80px}
 .e-times{color:var(--text2);font-size:12px;font-family:monospace}
 .e-hrs{color:var(--text3);font-size:12px}
 .e-val{font-weight:700;font-size:15px;margin-left:auto}
 
-/* REPORT TABLE */
-.rep-table{width:100%;border-collapse:collapse;font-size:13px}
-.rep-table th{text-align:left;padding:9px 12px;font-size:11px;font-weight:700;color:var(--text2);background:var(--surface2);border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.04em}
-.rep-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
-.rep-table tbody tr:hover{background:var(--surface2)}
-.rep-table tfoot td{font-weight:700;background:var(--surface2);border-top:2px solid var(--border2)}
-.tbl-wrap{overflow-x:auto;border-radius:0 0 12px 12px}
+/* BULK ACTION BAR */
+.bulk-action-bar{position:sticky;bottom:16px;z-index:50;margin:0 0 12px;display:none}
+.bulk-action-bar.show{display:block}
+.bab-inner{background:var(--navy);color:#fff;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.bab-info{font-size:13px;font-weight:600;flex:1}
+.bab-val{font-size:16px;font-weight:800;color:#93c5fd}
 
-/* EMPLOYEE */
+/* EMPLOYEE CARDS */
 .emp-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:13px 16px;margin-bottom:9px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.emp-avatar{width:38px;height:38px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex-shrink:0}
+.emp-avatar{width:40px;height:40px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
 .emp-info{flex:1;min-width:100px}
 .emp-name{font-weight:700;font-size:14px}
 .emp-pix{font-size:12px;color:var(--text2)}
@@ -146,55 +158,80 @@ input[type=checkbox]{width:15px;height:15px;accent-color:var(--accent);cursor:po
 .emp-stat .sl{font-size:10px;color:var(--text3);font-weight:700;text-transform:uppercase;letter-spacing:.04em;display:block}
 .emp-stat .sv{font-size:14px;font-weight:700;display:block}
 
+/* REPORT TABLE */
+.rep-table{width:100%;border-collapse:collapse;font-size:13px}
+.rep-table th{text-align:left;padding:9px 12px;font-size:10px;font-weight:700;color:var(--text2);background:var(--surface2);border-bottom:2px solid var(--border);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
+.rep-table td{padding:9px 12px;border-bottom:1px solid var(--border);vertical-align:middle}
+.rep-table tbody tr:hover{background:var(--surface2)}
+.rep-table tfoot td{font-weight:700;background:var(--surface2);border-top:2px solid var(--border2)}
+.tbl-wrap{overflow-x:auto;border-radius:0 0 12px 12px}
+
+/* CHART */
+.chart-wrap{height:180px;display:flex;align-items:flex-end;gap:4px;padding:8px 0 0}
+.bar-col{display:flex;flex-direction:column;align-items:center;flex:1;gap:3px}
+.bar{width:100%;background:var(--accent);border-radius:4px 4px 0 0;transition:height .4s;min-height:2px;cursor:pointer;position:relative}
+.bar:hover{background:#1e40af}
+.bar-tip{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;font-size:10px;padding:2px 6px;border-radius:4px;white-space:nowrap;display:none;margin-bottom:4px;z-index:10}
+.bar:hover .bar-tip{display:block}
+.bar-label{font-size:10px;color:var(--text3);text-align:center;margin-top:4px}
+
 /* MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:200;display:none;align-items:center;justify-content:center;padding:16px}
 .modal-overlay.open{display:flex}
-.modal{background:var(--surface);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:100%;max-width:500px;max-height:90vh;overflow-y:auto;padding:22px}
+.modal{background:var(--surface);border-radius:12px;box-shadow:0 20px 60px rgba(0,0,0,.2);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;padding:22px}
 .modal-title{font-size:16px;font-weight:700;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center}
-.modal-x{cursor:pointer;color:var(--text2);font-size:22px;line-height:1;padding:0 4px}
+.modal-x{cursor:pointer;color:var(--text2);font-size:22px;line-height:1;padding:0 4px;flex-shrink:0}
 .modal-x:hover{color:var(--text)}
-.pay-row{display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);align-items:center;font-size:12px}
+.pay-row{display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);align-items:center;font-size:13px}
 .pay-row:last-child{border-bottom:none}
 
-/* ALERT BANNER */
-.alert-banner{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--amber);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+/* ALERT */
+.alert{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--radius);padding:10px 14px;font-size:13px;color:var(--amber);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.alert.green{background:var(--green-bg);border-color:var(--green-bd);color:var(--green)}
 
 /* RATE TABLE */
 .rate-tbl{width:100%;border-collapse:collapse;font-size:13px}
-.rate-tbl td{padding:8px 10px;border-bottom:1px solid var(--border)}
+.rate-tbl td{padding:9px 10px;border-bottom:1px solid var(--border)}
 .rate-tbl tr:last-child td{border-bottom:none}
-.rate-tbl td:first-child{color:var(--text2);width:60%}
-.rate-tbl td input{width:90px;text-align:right;padding:4px 8px;font-size:13px}
+.rate-tbl td:first-child{color:var(--text2)}
+.rate-tbl td input{width:100px;text-align:right;padding:5px 8px;font-size:13px}
 
 /* AUTOCOMPLETE */
 .ac-wrap{position:relative}
 .ac-list{position:absolute;top:100%;left:0;right:0;background:var(--surface);border:1px solid var(--border2);border-radius:0 0 var(--radius) var(--radius);box-shadow:0 4px 14px rgba(0,0,0,.1);z-index:60;max-height:180px;overflow-y:auto;display:none}
-.ac-item{padding:7px 10px;cursor:pointer;font-size:13px}
+.ac-item{padding:8px 10px;cursor:pointer;font-size:14px}
 .ac-item:hover{background:var(--accent-bg);color:var(--accent)}
 
-/* DASHBOARD */
-.dash-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:16px}
-.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px}
-.dash-card.accent{background:var(--navy);border-color:var(--navy)}
-.dash-card.accent .sum-label{color:rgba(255,255,255,.6)}
-.dash-card.accent .sum-value{color:#fff}
-.dash-card.accent .sum-sub{color:rgba(255,255,255,.5)}
+/* PENDING */
+.pend-item{display:flex;align-items:center;gap:10px;padding:10px 12px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--radius);margin-bottom:7px;font-size:13px;flex-wrap:wrap}
+.pend-item.overdue{background:var(--red-bg);border-color:var(--red-bd)}
+.pend-name{font-weight:700;flex:1;min-width:80px}
+.pend-val{font-weight:800;color:var(--amber);font-size:15px}
+.pend-item.overdue .pend-val{color:var(--red)}
+
+/* WEEK SUMMARY */
+.week-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px}
+.week-header{display:flex;align-items:center;gap:10px;margin-bottom:8px;flex-wrap:wrap}
+.week-title{font-weight:700;font-size:13px}
+.week-total{margin-left:auto;font-weight:800;font-size:15px}
+.week-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);font-size:13px;flex-wrap:wrap}
+.week-row:last-child{border-bottom:none}
 
 /* FILTER */
-.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:14px}
+.filter-row{display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:12px}
 .filter-row>div{display:flex;flex-direction:column;gap:3px}
-.filter-row input,.filter-row select{min-width:110px}
-hr{border:none;border-top:1px solid var(--border);margin:14px 0}
+hr{border:none;border-top:1px solid var(--border);margin:12px 0}
+
+/* MONTH CLOSE MODAL */
+.emp-close-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius);margin-bottom:7px;flex-wrap:wrap}
+.emp-close-item input[type=checkbox]{width:18px;height:18px}
 
 /* TOAST */
-#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:9px 18px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap}
+#toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1e293b;color:#fff;padding:10px 20px;border-radius:8px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .2s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
 
-/* PENDING ALERT */
-.pending-list{margin-top:12px}
-.pending-item{display:flex;align-items:center;gap:10px;padding:8px 12px;background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:var(--radius);margin-bottom:6px;font-size:13px}
-.pending-item .pi-name{font-weight:700;flex:1}
-.pending-item .pi-val{font-weight:700;color:var(--amber)}
-.pending-item .pi-days{font-size:11px;color:var(--text3)}
+/* MOBILE FAB */
+.fab{display:none;position:fixed;bottom:20px;right:16px;z-index:80;background:var(--accent);color:#fff;border:none;border-radius:50%;width:52px;height:52px;font-size:24px;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(29,78,216,.4);cursor:pointer;touch-action:manipulation}
+@media(max-width:600px){.fab{display:flex}}
 </style>
 </head>
 <body>
@@ -203,7 +240,7 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 <div id="login-screen">
   <div class="login-box">
     <div class="login-logo">Diari<span>·</span>Pro</div>
-    <div class="login-sub">Faça login para continuar</div>
+    <div class="login-sub">Controle de diaristas e funcionários</div>
     <div class="login-field">
       <label>Usuário</label>
       <input type="text" id="l-user" placeholder="seu usuário" autocomplete="username">
@@ -222,17 +259,17 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div class="nav-inner">
     <div class="nav-brand">Diari<span>·</span>Pro</div>
     <div class="nav-tabs">
-      <button class="tab-btn active"  onclick="goTab('dashboard')">Dashboard</button>
+      <button class="tab-btn active"  onclick="goTab('dash')">Dashboard</button>
       <button class="tab-btn"         onclick="goTab('lancar')">Lançar</button>
       <button class="tab-btn"         onclick="goTab('lista')">Lançamentos</button>
-      <button class="tab-btn"         onclick="goTab('relatorio')" id="tab-btn-rel">Relatório</button>
-      <button class="tab-btn"         onclick="goTab('funcionarios')" id="tab-btn-emp">Funcionários</button>
-      <button class="tab-btn"         onclick="goTab('config')" id="tab-btn-cfg">Config</button>
+      <button class="tab-btn admin-only" onclick="goTab('relatorio')">Relatório</button>
+      <button class="tab-btn admin-only" onclick="goTab('funcionarios')">Funcionários</button>
+      <button class="tab-btn admin-only" onclick="goTab('config')">Config</button>
     </div>
     <div class="nav-right">
-      <span class="pill pill-red"   id="hdr-open">Aberto R$0</span>
-      <span class="pill pill-green" id="hdr-paid">Pago R$0</span>
-      <div class="sync-dot spin" id="sync-dot"></div>
+      <span class="pill pill-red"   id="hdr-open">R$0</span>
+      <span class="pill pill-green" id="hdr-paid">R$0</span>
+      <div class="sync-dot spin" id="sync-dot" title="Sincronizando"></div>
       <span class="user-badge" id="user-badge" onclick="doLogout()">sair</span>
     </div>
   </div>
@@ -242,75 +279,96 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
 
 <main id="app-main" style="display:none">
 
-<!-- DASHBOARD -->
-<div id="tab-dashboard" class="tab-pane active">
-  <div class="dash-grid" id="dash-top"></div>
+<!-- ═══ DASHBOARD ═══ -->
+<div id="tab-dash" class="tab-pane active">
+  <div class="sum-grid" id="dash-top"></div>
   <div id="dash-alerts"></div>
   <div class="card">
-    <div class="card-title">💰 Pendências em aberto por funcionário</div>
+    <div class="card-title">💰 Pendências em aberto</div>
     <div id="dash-pending"></div>
   </div>
+  <div class="card admin-only">
+    <div class="card-title">📊 Custo por mês</div>
+    <div class="chart-wrap" id="dash-chart"></div>
+  </div>
   <div class="card">
-    <div class="card-title">📅 Últimos lançamentos</div>
+    <div class="card-title">🕐 Últimos lançamentos</div>
     <div id="dash-recent"></div>
   </div>
 </div>
 
-<!-- LANÇAR -->
+<!-- ═══ LANÇAR ═══ -->
 <div id="tab-lancar" class="tab-pane">
-  <div class="card" style="padding:14px 18px">
-    <div style="display:flex;gap:14px;align-items:flex-end;flex-wrap:wrap">
-      <div><label>Data do dia</label>
-        <input type="date" id="bk-date" style="width:155px" oninput="onDateChange()"></div>
-      <div id="bk-day-badge" style="padding-bottom:7px;font-size:14px;font-weight:700"></div>
-      <label class="chk-label" style="padding-bottom:7px">
+  <div class="card" style="padding:12px 16px">
+    <div style="display:flex;gap:12px;align-items:flex-end;flex-wrap:wrap">
+      <div><label>Data</label>
+        <input type="date" id="bk-date" style="width:148px" oninput="onDateChange()"></div>
+      <div id="bk-badge" style="padding-bottom:8px;font-size:14px;font-weight:700"></div>
+      <label class="chk-label" style="padding-bottom:8px">
         <input type="checkbox" id="bk-holiday" onchange="onDateChange()"> Feriado
       </label>
-      <div style="margin-left:auto;display:flex;gap:8px;align-items:flex-end">
+      <div style="margin-left:auto;display:flex;gap:8px;flex-wrap:wrap">
         <button class="btn btn-secondary btn-sm" onclick="loadPrev()">↩ Repetir anterior</button>
         <button class="btn btn-primary" onclick="saveBulk()">✓ Salvar dia</button>
       </div>
     </div>
   </div>
   <div class="card">
-    <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;flex-wrap:wrap">
       <div class="card-title" style="margin:0">Funcionários do dia</div>
       <button class="btn btn-secondary btn-sm" onclick="addRow()">+ Linha</button>
     </div>
-    <div class="bulk-header-row">
+    <div class="bulk-hdr">
       <div class="col-hdr">Funcionário</div>
-      <div class="col-hdr">Entrada 1</div>
+      <div class="col-hdr">Entr. 1</div>
       <div class="col-hdr">Saída 1</div>
-      <div class="col-hdr">Entrada 2</div>
+      <div class="col-hdr">Entr. 2</div>
       <div class="col-hdr">Saída 2</div>
       <div class="col-hdr" title="Almoço">🍽</div>
+      <div class="col-hdr"></div>
       <div class="col-hdr">Horas · Total</div>
     </div>
     <div id="bulk-rows"></div>
     <button class="add-row-btn" onclick="addRow()">+ nova linha</button>
   </div>
-  <div id="day-total-card" class="card" style="display:none;background:var(--green-bg);border-color:var(--green-bd)">
-    <div style="display:flex;gap:24px;flex-wrap:wrap;align-items:center">
+  <div id="day-total" class="card" style="display:none;background:var(--green-bg);border-color:var(--green-bd)">
+    <div style="display:flex;gap:20px;flex-wrap:wrap;align-items:center">
       <div><div class="sum-label">Total do dia</div><div class="sum-value" id="dt-val">R$ 0,00</div></div>
-      <div><div class="sum-label">Horas totais</div><div class="sum-value" id="dt-hrs">0h00</div></div>
+      <div><div class="sum-label">Horas</div><div class="sum-value" id="dt-hrs">0h00</div></div>
       <div><div class="sum-label">Funcionários</div><div class="sum-value" id="dt-emp">0</div></div>
     </div>
   </div>
 </div>
 
-<!-- LISTA -->
+<!-- ═══ LANÇAMENTOS ═══ -->
 <div id="tab-lista" class="tab-pane">
   <div class="sum-grid">
-    <div class="sum-card"><div class="sum-label">Em aberto</div><div class="sum-value" id="s-open">R$ 0</div></div>
-    <div class="sum-card"><div class="sum-label">Já pago</div><div class="sum-value" id="s-paid">R$ 0</div></div>
+    <div class="sum-card navy"><div class="sum-label">Em aberto</div><div class="sum-value" id="s-open">R$ 0</div></div>
+    <div class="sum-card"><div class="sum-label">Já pago</div><div class="sum-value" id="s-paid" style="color:var(--green)">R$ 0</div></div>
     <div class="sum-card"><div class="sum-label">Total geral</div><div class="sum-value" id="s-total">R$ 0</div></div>
     <div class="sum-card"><div class="sum-label">Lançamentos</div><div class="sum-value" id="s-count">0</div></div>
   </div>
+
+  <!-- Baixa múltipla rápida por funcionário/mês -->
+  <div class="card admin-only" id="close-month-card">
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+      <div class="card-title" style="margin:0">Fechar mês por funcionário</div>
+      <div><label>Mês</label>
+        <input type="month" id="close-month" style="width:150px"></div>
+      <div><label>Funcionário</label>
+        <select id="close-emp" style="width:160px">
+          <option value="">Todos com saldo</option>
+        </select></div>
+      <button class="btn btn-amber btn-sm" onclick="openCloseMonth()">Fechar mês →</button>
+    </div>
+  </div>
+
+  <!-- Filtros -->
   <div class="card" style="padding:12px 16px">
     <div class="filter-row">
-      <div><label>Funcionário</label><input type="text" id="f-name" placeholder="Nome..." oninput="renderList()" style="width:140px"></div>
-      <div><label>De</label><input type="date" id="f-from" oninput="renderList()" style="width:135px"></div>
-      <div><label>Até</label><input type="date" id="f-to" oninput="renderList()" style="width:135px"></div>
+      <div><label>Funcionário</label><input type="text" id="f-name" placeholder="Nome..." oninput="renderList()" style="width:130px"></div>
+      <div><label>De</label><input type="date" id="f-from" oninput="renderList()" style="width:130px"></div>
+      <div><label>Até</label><input type="date" id="f-to" oninput="renderList()" style="width:130px"></div>
       <div><label>Status</label>
         <select id="f-status" onchange="renderList()" style="width:110px">
           <option value="">Todos</option><option value="open">Aberto</option>
@@ -325,46 +383,50 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
       <button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="clearF()">Limpar</button>
     </div>
   </div>
+
+  <!-- Seleção múltipla -->
+  <div class="bulk-action-bar" id="bab">
+    <div class="bab-inner">
+      <div class="bab-info">
+        <span id="bab-count">0</span> selecionado(s) · 
+        <span class="bab-val" id="bab-val">R$ 0,00</span>
+      </div>
+      <button class="btn btn-secondary btn-sm" onclick="selectAll()">Selecionar todos</button>
+      <button class="btn btn-green btn-sm" onclick="paySelected()">💰 Pagar selecionados</button>
+      <button class="btn btn-xs" style="color:rgba(255,255,255,.5)" onclick="clearSel()">✕</button>
+    </div>
+  </div>
+
   <div id="entry-list"></div>
 </div>
 
-<!-- RELATÓRIO -->
+<!-- ═══ RELATÓRIO ═══ -->
 <div id="tab-relatorio" class="tab-pane">
   <div class="card" style="padding:12px 16px">
     <div class="filter-row">
       <div><label>Funcionário</label>
         <select id="r-emp" onchange="renderReport()" style="width:150px"><option value="">Todos</option></select></div>
-      <div><label>De</label><input type="date" id="r-from" oninput="renderReport()" style="width:135px"></div>
-      <div><label>Até</label><input type="date" id="r-to" oninput="renderReport()" style="width:135px"></div>
-      <div><label>Status</label>
-        <select id="r-status" onchange="renderReport()" style="width:110px">
-          <option value="">Todos</option><option value="open">Aberto</option><option value="paid">Pago</option>
+      <div><label>De</label><input type="date" id="r-from" oninput="renderReport()" style="width:130px"></div>
+      <div><label>Até</label><input type="date" id="r-to" oninput="renderReport()" style="width:130px"></div>
+      <div><label>Visão</label>
+        <select id="r-view" onchange="renderReport()" style="width:130px">
+          <option value="table">Tabela</option>
+          <option value="weekly">Resumo semanal</option>
         </select></div>
       <button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="exportCSV()">⬇ CSV</button>
     </div>
   </div>
   <div class="sum-grid" id="r-by-emp"></div>
-  <div class="card" style="padding:0">
-    <div class="tbl-wrap">
-      <table class="rep-table">
-        <thead><tr>
-          <th>Funcionário</th><th>Data</th><th>Tipo</th><th>Horários</th>
-          <th>Horas</th><th>Total</th><th>Status</th><th>Pago</th>
-        </tr></thead>
-        <tbody id="r-body"></tbody>
-        <tfoot><tr><td colspan="4">Total</td><td id="r-tot-h">—</td><td id="r-tot-v">—</td><td colspan="2"></td></tr></tfoot>
-      </table>
-    </div>
-  </div>
+  <div id="r-content"></div>
 </div>
 
-<!-- FUNCIONÁRIOS -->
+<!-- ═══ FUNCIONÁRIOS ═══ -->
 <div id="tab-funcionarios" class="tab-pane">
   <div class="card">
     <div class="card-title">Cadastrar funcionário</div>
     <div class="grid-3" style="max-width:580px">
       <div><label>Nome *</label><input type="text" id="e-name" placeholder="Ex: Neide"></div>
-      <div><label>Chave Pix</label><input type="text" id="e-pix" placeholder="CPF, email ou telefone"></div>
+      <div><label>Chave Pix</label><input type="text" id="e-pix" placeholder="CPF, email..."></div>
       <div><label>Observação</label><input type="text" id="e-obs" placeholder="Opcional"></div>
     </div>
     <div class="btns" style="margin-top:12px">
@@ -374,10 +436,11 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
   <div id="emp-list"></div>
 </div>
 
-<!-- CONFIG -->
+<!-- ═══ CONFIG ═══ -->
 <div id="tab-config" class="tab-pane">
   <div class="card">
-    <div class="card-title">Tabela de valores (R$/hora)</div>
+    <div class="card-title">Tabela de valores</div>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Taxas aplicadas automaticamente por tipo de dia e faixa de horário.</p>
     <table class="rate-tbl"><tbody id="rate-body"></tbody></table>
     <div class="btns" style="margin-top:14px">
       <button class="btn btn-primary" onclick="saveRates()">Salvar valores</button>
@@ -385,98 +448,79 @@ hr{border:none;border-top:1px solid var(--border);margin:14px 0}
     </div>
   </div>
   <div class="card">
-    <div class="card-title">Backup de dados</div>
+    <div class="card-title">Backup</div>
     <div class="btns">
       <button class="btn btn-secondary" onclick="exportJSON()">⬇ Exportar JSON</button>
       <button class="btn btn-secondary" onclick="importJSON()">⬆ Importar JSON</button>
       <button class="btn btn-xs btn-red" onclick="clearAll()">🗑 Apagar tudo</button>
     </div>
+    <p style="font-size:11px;color:var(--text3);margin-top:10px">Dados salvos no Firebase. Backup JSON é segurança extra.</p>
   </div>
 </div>
 
 </main>
 
+<!-- FAB mobile -->
+<button class="fab" onclick="goTab('lancar')" title="Lançar">+</button>
+
 <!-- MODAL PAGAMENTO -->
 <div id="pay-modal" class="modal-overlay" onclick="if(event.target===this)closeModal()">
   <div class="modal">
-    <div class="modal-title">
-      <span id="modal-title">Pagamento</span>
-      <span class="modal-x" onclick="closeModal()">×</span>
-    </div>
+    <div class="modal-title"><span id="modal-title">Pagamento</span><span class="modal-x" onclick="closeModal()">×</span></div>
     <div id="modal-body"></div>
   </div>
 </div>
 
+<!-- MODAL FECHAR MÊS -->
+<div id="close-modal" class="modal-overlay" onclick="if(event.target===this)closeCloseModal()">
+  <div class="modal">
+    <div class="modal-title"><span id="cm-title">Fechar mês</span><span class="modal-x" onclick="closeCloseModal()">×</span></div>
+    <div id="cm-body"></div>
+  </div>
+</div>
+
 <script>
-// ══════════════════════════ AUTH
-// Hashes SHA-256 de usuario+senha (não ficam em texto claro)
-const USERS = {
-  'andre':  { hash:'ce4bcf62f8762f3cf7cd97240c180eb8fb8fb5bb50bf5a00be233cfd785cabc3', role:'admin' },
-  'reymer': { hash:'fde5b9a9dbf64ae17b12b9a9c504da1b2c6e9f49f7cca15c50b170b1cba99687', role:'operator' },
+// ═══════════════════════════ AUTH
+const USERS={
+  'andre': {hash:'ce4bcf62f8762f3cf7cd97240c180eb8fb8fb5bb50bf5a00be233cfd785cabc3',role:'admin'},
+  'reymer':{hash:'fde5b9a9dbf64ae17b12b9a9c504da1b2c6e9f49f7cca15c50b170b1cba99687',role:'operator'},
 };
-// role admin = vê tudo, edita tudo
-// role operator = só lança (sem apagar, sem relatório, sem config)
+let currentUser=null;
 
-let currentUser = null;
-
-async function sha256(str) {
-  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
-  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+async function sha256(s){
+  const b=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(b)).map(x=>x.toString(16).padStart(2,'0')).join('');
 }
-
-async function doLogin() {
-  const user = document.getElementById('l-user').value.trim().toLowerCase();
-  const pass = document.getElementById('l-pass').value;
-  const err  = document.getElementById('l-err');
-  if (!user || !pass) { err.style.display='block'; err.textContent='Preencha todos os campos.'; return; }
-  const u = USERS[user];
-  if (!u) { err.style.display='block'; err.textContent='Usuário ou senha incorretos.'; return; }
-  const h = await sha256(user + pass);
-  if (h !== u.hash) { err.style.display='block'; err.textContent='Usuário ou senha incorretos.'; return; }
+async function doLogin(){
+  const user=document.getElementById('l-user').value.trim().toLowerCase();
+  const pass=document.getElementById('l-pass').value;
+  const err=document.getElementById('l-err');
+  if(!user||!pass){err.style.display='block';err.textContent='Preencha todos os campos.';return;}
+  const u=USERS[user];
+  if(!u){err.style.display='block';err.textContent='Usuário ou senha incorretos.';return;}
+  const h=await sha256(user+pass);
+  if(h!==u.hash){err.style.display='block';err.textContent='Usuário ou senha incorretos.';return;}
   err.style.display='none';
-  currentUser = { name: user, role: u.role };
-  sessionStorage.setItem('dp_user', JSON.stringify(currentUser));
+  currentUser={name:user,role:u.role};
+  sessionStorage.setItem('dp_u',JSON.stringify(currentUser));
   startApp();
 }
-
-function doLogout() {
-  if (!confirm('Sair do sistema?')) return;
-  sessionStorage.removeItem('dp_user');
-  location.reload();
+function doLogout(){if(!confirm('Sair?'))return;sessionStorage.removeItem('dp_u');location.reload();}
+function checkSession(){try{const s=sessionStorage.getItem('dp_u');if(s){currentUser=JSON.parse(s);return true;}}catch(e){}return false;}
+function applyRole(){
+  const isAdmin=currentUser.role==='admin';
+  document.getElementById('user-badge').textContent=`${currentUser.name} · sair`;
+  document.querySelectorAll('.admin-only').forEach(el=>el.style.display=isAdmin?'':'none');
 }
 
-function checkSession() {
-  try {
-    const s = sessionStorage.getItem('dp_user');
-    if (s) { currentUser = JSON.parse(s); return true; }
-  } catch(e) {}
-  return false;
-}
-
-function applyRole() {
-  const isAdmin = currentUser.role === 'admin';
-  document.getElementById('user-badge').textContent = `${currentUser.name} · sair`;
-  // Esconde abas restritas para operator
-  if (!isAdmin) {
-    document.getElementById('tab-btn-rel').style.display='none';
-    document.getElementById('tab-btn-cfg').style.display='none';
-  }
-}
-
-// ══════════════════════════ FIREBASE
-const FB_CONFIG = {
-  apiKey: "AIzaSyC8IO8wI9tAHgJROEOMOEaTVOuX_8C5ggY",
-  authDomain: "diariapro-db915.firebaseapp.com",
-  projectId: "diariapro-db915",
+// ═══════════════════════════ FIREBASE
+const FB_CONFIG={
+  apiKey:"AIzaSyC8IO8wI9tAHgJROEOMOEaTVOuX_8C5ggY",
+  authDomain:"diariapro-db915.firebaseapp.com",
+  projectId:"diariapro-db915",
 };
-
-const DEF_RATES = {
-  wdBase:14,wd19:16,wd20:18,wd21:20,
-  satBase:14,satAfter:18,satOnly:14,
-  sunHol:20,pga:10,
-};
-
-const RATE_LABELS = [
+const DEF_RATES={wdBase:14,wd19:16,wd20:18,wd21:20,satBase:14,satAfter:18,satOnly:14,sunHol:20,pga:10};
+const RATE_LABELS=[
   {key:'wdBase',  label:'Semana (até 19h)',              unit:'R$/h'},
   {key:'wd19',    label:'Semana 19h–20h',                unit:'R$/h'},
   {key:'wd20',    label:'Semana 20h–21h',                unit:'R$/h'},
@@ -489,34 +533,29 @@ const RATE_LABELS = [
 ];
 
 let state={entries:[],employees:[],payments:[],rates:{...DEF_RATES}};
-let db=null, useFirebase=false;
+let db=null,useFirebase=false;
 
 function setSyncDot(s){
   const d=document.getElementById('sync-dot');
   d.className='sync-dot';
   if(s==='ok'){d.classList.add('ok');d.title='Sincronizado';}
-  else if(s==='err'){d.classList.add('err');d.title='Erro — dados locais';}
+  else if(s==='err'){d.classList.add('err');d.title='Erro — local';}
   else{d.classList.add('spin');d.title='Sincronizando...';}
 }
-
-function startApp() {
+function startApp(){
   document.getElementById('login-screen').style.display='none';
   document.getElementById('app-nav').style.display='block';
   document.getElementById('app-main').style.display='block';
   applyRole();
   initFirebase();
 }
-
 function initFirebase(){
   try{
     firebase.initializeApp(FB_CONFIG);
-    db=firebase.firestore();
-    useFirebase=true;
-    setSyncDot('spin');
-    loadFirebase();
+    db=firebase.firestore();useFirebase=true;
+    setSyncDot('spin');loadFirebase();
   }catch(e){setSyncDot('err');loadLocal();}
 }
-
 async function loadFirebase(){
   try{
     const [e1,e2,e3,e4]=await Promise.all([
@@ -528,18 +567,15 @@ async function loadFirebase(){
     state.entries  =e1.docs.map(d=>({id:d.id,...d.data()}));
     state.employees=e2.docs.map(d=>({id:d.id,...d.data()}));
     state.payments =e3.docs.map(d=>({id:d.id,...d.data()}));
-    if(e4.exists) state.rates={...DEF_RATES,...e4.data()};
-    setSyncDot('ok');
-    afterLoad();
+    if(e4.exists)state.rates={...DEF_RATES,...e4.data()};
+    setSyncDot('ok');afterLoad();
   }catch(e){setSyncDot('err');loadLocal();}
 }
-
 async function fbSet(col,id,data){saveLocal();if(!useFirebase||!db)return;try{await db.collection(col).doc(id).set(data);setSyncDot('ok');}catch(e){setSyncDot('err');}}
 async function fbDel(col,id){saveLocal();if(!useFirebase||!db)return;try{await db.collection(col).doc(id).delete();setSyncDot('ok');}catch(e){setSyncDot('err');}}
-
-function saveLocal(){try{localStorage.setItem('diariapro_v2',JSON.stringify(state));}catch(e){}}
+function saveLocal(){try{localStorage.setItem('dp_v3',JSON.stringify(state));}catch(e){}}
 function loadLocal(){
-  try{const s=localStorage.getItem('diariapro_v2');if(s)Object.assign(state,JSON.parse(s));}catch(e){}
+  try{const s=localStorage.getItem('dp_v3')||localStorage.getItem('diariapro_v2');if(s)Object.assign(state,JSON.parse(s));}catch(e){}
   if(!state.entries)state.entries=[];
   if(!state.employees)state.employees=[];
   if(!state.payments)state.payments=[];
@@ -547,27 +583,27 @@ function loadLocal(){
   for(const k in DEF_RATES)if(state.rates[k]===undefined)state.rates[k]=DEF_RATES[k];
   afterLoad();
 }
-
 function afterLoad(){
-  updateHeader();
-  initBulk();
-  renderRates();
-  renderDashboard();
+  updateHeader();initBulk();renderRates();renderDashboard();
+  // Populate close-month defaults
+  const cm=document.getElementById('close-month');
+  if(cm)cm.value=todayISO().slice(0,7);
 }
 
-// ══════════════════════════ UTILS
+// ═══════════════════════════ UTILS
 function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2,7);}
 function todayISO(){return new Date().toISOString().slice(0,10);}
 function fmtDate(iso){if(!iso)return'—';const[y,m,d]=iso.split('-');return`${d}/${m}/${y}`;}
-function fmtMoney(v){return'R$ '+Number(v).toFixed(2).replace('.',',');}
+function fmtMoney(v){return'R$ '+Number(v||0).toFixed(2).replace('.',',');}
 function fmtHours(mins){if(!mins&&mins!==0)return'—';return`${Math.floor(mins/60)}h${String(mins%60).padStart(2,'0')}`;}
 function toMins(t){if(!t||!t.includes(':'))return null;const[h,m]=t.split(':').map(Number);return h*60+m;}
 function getDayType(iso,hol){if(hol)return'holiday';const d=new Date(iso+'T12:00:00').getDay();if(d===0)return'sunday';if(d===6)return'saturday';return'weekday';}
 function dayLabel(t){return{weekday:'Semana',saturday:'Sábado',sunday:'Domingo',holiday:'Feriado'}[t]||t;}
 function wdName(iso){return['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'][new Date(iso+'T12:00:00').getDay()];}
 function cap(s){return s.trim().toLowerCase().replace(/\b\w/g,c=>c.toUpperCase());}
+function getPaid(eid){return state.payments.filter(p=>p.entryId===eid).reduce((s,p)=>s+p.amount,0);}
 
-// ══════════════════════════ CALC
+// ═══════════════════════════ CALC
 function calcEntry(e){
   const r=state.rates,dt=e.dayType;
   let mins=0;
@@ -596,18 +632,23 @@ function calcEntry(e){
   return{mins,gross,pga,final:Math.max(0,gross-pga)};
 }
 
-// ══════════════════════════ TABS
+// ═══════════════════════════ TABS
 function goTab(t){
   document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active',b.getAttribute('onclick').includes(`'${t}'`)));
   document.querySelectorAll('.tab-pane').forEach(p=>p.classList.toggle('active',p.id==='tab-'+t));
-  if(t==='dashboard')renderDashboard();
+  if(t==='dash')renderDashboard();
   if(t==='lista'){renderList();updateSummary();}
   if(t==='relatorio')renderReport();
   if(t==='funcionarios')renderEmps();
   if(t==='config')renderRates();
+  // Update close-emp select
+  if(t==='lista'){
+    const sel=document.getElementById('close-emp');
+    if(sel){sel.innerHTML='<option value="">Todos com saldo</option>'+state.employees.map(e=>`<option value="${e.name}">${e.name}</option>`).join('');}
+  }
 }
 
-// ══════════════════════════ DASHBOARD
+// ═══════════════════════════ DASHBOARD
 function renderDashboard(){
   let open=0,paid=0,totMins=0;
   state.entries.forEach(e=>{
@@ -615,83 +656,108 @@ function renderDashboard(){
     const p=getPaid(e.id);
     open+=Math.max(0,final-p);paid+=p;totMins+=mins;
   });
-
-  // Mês atual
-  const now=new Date(),ym=todayISO().slice(0,7);
-  const mesEntries=state.entries.filter(e=>e.date.startsWith(ym));
-  const mesVal=mesEntries.reduce((s,e)=>s+calcEntry(e).final,0);
-  const mesDias=[...new Set(mesEntries.map(e=>e.date))].length;
+  const ym=todayISO().slice(0,7);
+  const mesEnt=state.entries.filter(e=>e.date.startsWith(ym));
+  const mesVal=mesEnt.reduce((s,e)=>s+calcEntry(e).final,0);
+  const mesDias=[...new Set(mesEnt.map(e=>e.date))].length;
 
   document.getElementById('dash-top').innerHTML=`
-    <div class="dash-card accent">
-      <div class="sum-label">Total em aberto</div>
-      <div class="sum-value">${fmtMoney(open)}</div>
-      <div class="sum-sub">a pagar</div>
-    </div>
-    <div class="dash-card">
-      <div class="sum-label">Total pago</div>
-      <div class="sum-value" style="color:var(--green)">${fmtMoney(paid)}</div>
-      <div class="sum-sub">histórico completo</div>
-    </div>
-    <div class="dash-card">
-      <div class="sum-label">Custo este mês</div>
-      <div class="sum-value">${fmtMoney(mesVal)}</div>
-      <div class="sum-sub">${mesDias} dias trabalhados</div>
-    </div>
-    <div class="dash-card">
-      <div class="sum-label">Horas totais</div>
-      <div class="sum-value">${fmtHours(totMins)}</div>
-      <div class="sum-sub">${state.entries.length} lançamentos</div>
-    </div>`;
+    <div class="sum-card navy"><div class="sum-label">Em aberto</div><div class="sum-value">${fmtMoney(open)}</div><div class="sum-sub">a pagar</div></div>
+    <div class="sum-card"><div class="sum-label">Total pago</div><div class="sum-value" style="color:var(--green)">${fmtMoney(paid)}</div></div>
+    <div class="sum-card"><div class="sum-label">Custo este mês</div><div class="sum-value">${fmtMoney(mesVal)}</div><div class="sum-sub">${mesDias} dias</div></div>
+    <div class="sum-card"><div class="sum-label">Horas totais</div><div class="sum-value">${fmtHours(totMins)}</div><div class="sum-sub">${state.entries.length} lançamentos</div></div>`;
 
-  // Alertas de pendências antigas (>7 dias)
-  const cutoff=new Date();cutoff.setDate(cutoff.getDate()-7);
-  const cutISO=cutoff.toISOString().slice(0,10);
-  const overdue=state.entries.filter(e=>{
-    if(e.status==='paid')return false;
-    const{final}=calcEntry(e);
-    return(final-getPaid(e.id))>0.01&&e.date<cutISO;
-  });
-  const alertEl=document.getElementById('dash-alerts');
-  alertEl.innerHTML=overdue.length?`<div class="alert-banner">⚠️ ${overdue.length} lançamento(s) em aberto há mais de 7 dias</div>`:'';
+  // Alertas
+  const cutISO=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
+  const overdue=state.entries.filter(e=>e.status!=='paid'&&(calcEntry(e).final-getPaid(e.id))>0.01&&e.date<cutISO).length;
+  document.getElementById('dash-alerts').innerHTML=overdue?`<div class="alert">⚠️ ${overdue} lançamento(s) em aberto há mais de 7 dias — <a href="#" onclick="goTab('lista');clearF();document.getElementById('f-status').value='open';renderList();return false" style="color:inherit;font-weight:700">Ver</a></div>`:'';
 
   // Pendências por funcionário
   const byEmp={};
   state.entries.forEach(e=>{
-    const{final}=calcEntry(e);
-    const saldo=final-getPaid(e.id);
+    const{final}=calcEntry(e);const saldo=final-getPaid(e.id);
     if(saldo<0.01)return;
-    if(!byEmp[e.employee])byEmp[e.employee]={saldo:0,entries:[]};
-    byEmp[e.employee].saldo+=saldo;
-    byEmp[e.employee].entries.push(e);
+    if(!byEmp[e.employee])byEmp[e.employee]={saldo:0,count:0,oldest:e.date};
+    byEmp[e.employee].saldo+=saldo;byEmp[e.employee].count++;
+    if(e.date<byEmp[e.employee].oldest)byEmp[e.employee].oldest=e.date;
   });
-  const pend=document.getElementById('dash-pending');
-  const emps=Object.keys(byEmp).sort((a,b)=>byEmp[b].saldo-byEmp[a].saldo);
-  pend.innerHTML=emps.length?emps.map(n=>{
-    const emp=state.employees.find(x=>x.name===n);
-    return`<div class="pending-item">
-      <div class="pi-name">${n}</div>
-      <div class="pi-days">${byEmp[n].entries.length} dia(s)</div>
-      ${emp?.pix?`<div style="font-size:11px;color:var(--text3)">Pix: ${emp.pix}</div>`:''}
-      <div class="pi-val">${fmtMoney(byEmp[n].saldo)}</div>
-      <button class="btn btn-xs btn-green" onclick="goTab('lista')">Ver</button>
-    </div>`;}).join('')
-  :'<div style="color:var(--text3);font-size:13px;padding:8px 0">✅ Nenhuma pendência em aberto</div>';
+  const pEl=document.getElementById('dash-pending');
+  const pEmps=Object.keys(byEmp).sort((a,b)=>byEmp[b].saldo-byEmp[a].saldo);
+  if(pEmps.length){
+    const emp=state.employees;
+    pEl.innerHTML=pEmps.map(n=>{
+      const e=byEmp[n];
+      const empData=emp.find(x=>x.name===n);
+      const od=e.oldest<cutISO;
+      return`<div class="pend-item${od?' overdue':''}">
+        <div class="pend-name">${n}</div>
+        <div style="font-size:11px;color:var(--text3)">${e.count} dia(s) · desde ${fmtDate(e.oldest)}</div>
+        ${empData?.pix?`<div style="font-size:11px;color:var(--text3)">Pix: ${empData.pix}</div>`:''}
+        <div class="pend-val">${fmtMoney(e.saldo)}</div>
+        ${currentUser.role==='admin'?`<button class="btn btn-xs btn-green" onclick="quickPayAll('${n}')">Pagar tudo</button>`:''}
+      </div>`;
+    }).join('');
+  }else{pEl.innerHTML='<div class="alert green">✅ Nenhuma pendência em aberto</div>';}
 
-  // Últimos 5 lançamentos
-  const recent=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  // Gráfico
+  if(currentUser.role==='admin'){
+    const byMonth={};
+    state.entries.forEach(e=>{
+      const m=e.date.slice(0,7);
+      if(!byMonth[m])byMonth[m]=0;
+      byMonth[m]+=calcEntry(e).final;
+    });
+    const months=Object.keys(byMonth).sort().slice(-8);
+    const max=Math.max(...months.map(m=>byMonth[m]),1);
+    const chartEl=document.getElementById('dash-chart');
+    if(chartEl){
+      chartEl.innerHTML=months.map(m=>{
+        const pct=Math.round((byMonth[m]/max)*160);
+        const [y,mo]=m.split('-');
+        const label=`${mo}/${y.slice(2)}`;
+        return`<div class="bar-col">
+          <div class="bar" style="height:${pct}px"><div class="bar-tip">${label}<br>${fmtMoney(byMonth[m])}</div></div>
+          <div class="bar-label">${label}</div>
+        </div>`;
+      }).join('');
+    }
+  }
+
+  // Últimos 5
+  const recent=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date)||b.createdAt?.localeCompare(a.createdAt||'')).slice(0,5);
   document.getElementById('dash-recent').innerHTML=recent.length?recent.map(e=>{
     const{mins,final}=calcEntry(e);
     return`<div class="entry-item">
       <div><div class="e-name">${e.employee}</div><div class="e-times">${fmtDate(e.date)} · ${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}</div></div>
       <span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span>
-      <div class="e-val" style="margin-left:auto">${fmtMoney(final)}</div>
+      <div class="e-val">${fmtMoney(final)}</div>
       <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
-    </div>`;}).join('')
-  :'<div style="color:var(--text3);font-size:13px;padding:8px 0">Nenhum lançamento ainda.</div>';
+    </div>`;
+  }).join(''):'<div style="color:var(--text3);font-size:13px;padding:8px 0">Nenhum lançamento ainda.</div>';
 }
 
-// ══════════════════════════ BULK
+// ═══════════════════════════ QUICK PAY ALL
+async function quickPayAll(empName){
+  const open=state.entries.filter(e=>e.employee===empName&&e.status!=='paid'&&(calcEntry(e).final-getPaid(e.id))>0.01);
+  if(!open.length){toast('Nada em aberto para este funcionário.');return;}
+  const total=open.reduce((s,e)=>s+(calcEntry(e).final-getPaid(e.id)),0);
+  const emp=state.employees.find(x=>x.name===empName);
+  const pix=emp?.pix?`\nPix: ${emp.pix}`:'';
+  if(!confirm(`Pagar tudo de ${empName}?\nTotal: ${fmtMoney(total)}${pix}`))return;
+  const date=todayISO();
+  for(const e of open){
+    const saldo=calcEntry(e).final-getPaid(e.id);
+    const pay={id:uid(),entryId:e.id,amount:saldo,date,obs:'Pagamento total',paidBy:currentUser.name};
+    state.payments.push(pay);
+    e.status='paid';
+    await fbSet('payments',pay.id,pay);
+    await fbSet('entries',e.id,e);
+  }
+  updateHeader();renderDashboard();
+  toast(`${open.length} lançamento(s) de ${empName} pagos!`);
+}
+
+// ═══════════════════════════ BULK ENTRY
 let rows=[],rid=0;
 function initBulk(){
   document.getElementById('bk-date').value=todayISO();
@@ -699,24 +765,20 @@ function initBulk(){
   document.getElementById('bulk-rows').innerHTML='';
   addRow();addRow();addRow();
 }
-
 function onDateChange(){
-  const iso=document.getElementById('bk-date').value;
-  if(!iso)return;
+  const iso=document.getElementById('bk-date').value;if(!iso)return;
   const hol=document.getElementById('bk-holiday').checked;
   const dt=getDayType(iso,hol);
   const colors={weekday:'#1d4ed8',saturday:'#6d28d9',sunday:'#c2410c',holiday:'#b91c1c'};
-  document.getElementById('bk-day-badge').innerHTML=`<span style="color:${colors[dt]}">${wdName(iso)} · ${dayLabel(dt)}</span>`;
+  document.getElementById('bk-badge').innerHTML=`<span style="color:${colors[dt]}">${wdName(iso)} · ${dayLabel(dt)}</span>`;
   document.querySelectorAll('[data-rid]').forEach(r=>recalcRow(r.dataset.rid));
   updateDayTotal();
 }
-
 function addRow(opts={}){
   const id='r'+(++rid);
   rows.push({id,name:opts.name||'',in1:opts.in1||'',out1:opts.out1||'',in2:opts.in2||'',out2:opts.out2||'',pga:opts.pga||false});
   renderRows();
 }
-
 function renderRows(){
   const c=document.getElementById('bulk-rows');c.innerHTML='';
   rows.forEach(r=>{
@@ -726,26 +788,22 @@ function renderRows(){
       <div class="row-name ac-wrap">
         <input type="text" placeholder="Funcionário" value="${r.name}"
           oninput="setF('${r.id}','name',this.value);showAC(this,'${r.id}')"
-          onblur="hideAC('${r.id}')" style="font-size:13px;padding:6px 8px">
+          onblur="hideAC('${r.id}')" style="font-size:14px;padding:7px 8px">
         <div class="ac-list" id="ac-${r.id}"></div>
       </div>
       <input type="time" value="${r.in1}"  oninput="setF('${r.id}','in1',this.value)">
       <input type="time" value="${r.out1}" oninput="setF('${r.id}','out1',this.value)">
       <input type="time" value="${r.in2}"  oninput="setF('${r.id}','in2',this.value)">
       <input type="time" value="${r.out2}" oninput="setF('${r.id}','out2',this.value)">
-      <label class="chk-label" title="Pegou almoço">
+      <label class="chk-label" title="Almoço (-R$${state.rates.pga})">
         <input type="checkbox" ${r.pga?'checked':''} onchange="setF('${r.id}','pga',this.checked)">
       </label>
-      <div style="display:flex;align-items:center;gap:8px">
-        <div class="row-prev" id="prev-${r.id}"></div>
-        <button onclick="removeRow('${r.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:16px;line-height:1">✕</button>
-      </div>`;
+      <button onclick="removeRow('${r.id}')" style="background:none;border:none;cursor:pointer;color:var(--text3);font-size:18px;line-height:1;touch-action:manipulation">✕</button>
+      <div class="row-prev" id="prev-${r.id}"></div>`;
     c.appendChild(div);recalcRow(r.id);
   });
 }
-
 function setF(id,field,val){const r=rows.find(x=>x.id===id);if(r){r[field]=val;recalcRow(id);updateDayTotal();}}
-
 function recalcRow(id){
   const r=rows.find(x=>x.id===id);if(!r)return;
   const el=document.getElementById('prev-'+id);if(!el)return;
@@ -755,7 +813,6 @@ function recalcRow(id){
   const{mins,final}=calcEntry({...r,dayType:getDayType(iso,hol)});
   el.textContent=mins>0?`${fmtHours(mins)} · ${fmtMoney(final)}${r.pga?' 🍽':''}` :'';
 }
-
 function updateDayTotal(){
   const iso=document.getElementById('bk-date').value;
   const hol=document.getElementById('bk-holiday').checked;
@@ -767,7 +824,7 @@ function updateDayTotal(){
     const{mins,final}=calcEntry({...r,dayType:dt});
     if(mins>0){tM+=mins;tV+=final;tE++;}
   });
-  const card=document.getElementById('day-total-card');
+  const card=document.getElementById('day-total');
   if(tE>0){
     card.style.display='block';
     document.getElementById('dt-val').textContent=fmtMoney(tV);
@@ -775,9 +832,7 @@ function updateDayTotal(){
     document.getElementById('dt-emp').textContent=tE;
   }else{card.style.display='none';}
 }
-
 function removeRow(id){rows=rows.filter(x=>x.id!==id);renderRows();updateDayTotal();}
-
 function loadPrev(){
   const sorted=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date));
   if(!sorted.length){toast('Nenhum lançamento anterior.');return;}
@@ -787,7 +842,6 @@ function loadPrev(){
   prev.forEach(e=>addRow({name:e.employee,in1:e.in1,out1:e.out1,in2:e.in2,out2:e.out2,pga:e.pga}));
   toast(`${prev.length} funcionário(s) de ${fmtDate(last)} carregados`);
 }
-
 async function saveBulk(){
   const iso=document.getElementById('bk-date').value;
   const hol=document.getElementById('bk-holiday').checked;
@@ -808,10 +862,10 @@ async function saveBulk(){
   }
   updateHeader();renderDashboard();
   toast(`${saved} lançamento(s) salvos!${skip?` (${skip} ignoradas)`:''}`);
-  if(saved>0){rows=[];rid=0;document.getElementById('bulk-rows').innerHTML='';document.getElementById('day-total-card').style.display='none';addRow();addRow();addRow();}
+  if(saved>0){rows=[];rid=0;document.getElementById('bulk-rows').innerHTML='';document.getElementById('day-total').style.display='none';addRow();addRow();addRow();}
 }
 
-// ══════════════════════════ AUTOCOMPLETE
+// ═══════════════════════════ AUTOCOMPLETE
 function showAC(inp,id){
   const q=inp.value.toLowerCase();
   const list=document.getElementById('ac-'+id);
@@ -823,9 +877,60 @@ function showAC(inp,id){
 function pickAC(id,name){const r=rows.find(x=>x.id===id);if(r){r.name=name;renderRows();updateDayTotal();}}
 function hideAC(id){setTimeout(()=>{const l=document.getElementById('ac-'+id);if(l)l.style.display='none';},160);}
 
-// ══════════════════════════ ENTRY LIST
-function getPaid(eid){return state.payments.filter(p=>p.entryId===eid).reduce((s,p)=>s+p.amount,0);}
+// ═══════════════════════════ SELECTION (baixa múltipla)
+let selected=new Set();
+function toggleSel(eid,checked){
+  if(checked)selected.add(eid);else selected.delete(eid);
+  updateBab();
+  document.querySelector(`.entry-item[data-eid="${eid}"]`)?.classList.toggle('sel',checked);
+}
+function updateBab(){
+  const bab=document.getElementById('bab');
+  if(!selected.size){bab.classList.remove('show');return;}
+  bab.classList.add('show');
+  let total=0;
+  selected.forEach(eid=>{
+    const e=state.entries.find(x=>x.id===eid);
+    if(e){const{final}=calcEntry(e);total+=Math.max(0,final-getPaid(eid));}
+  });
+  document.getElementById('bab-count').textContent=selected.size;
+  document.getElementById('bab-val').textContent=fmtMoney(total);
+}
+function selectAll(){
+  document.querySelectorAll('.entry-sel-chk').forEach(chk=>{
+    const eid=chk.dataset.eid;
+    const e=state.entries.find(x=>x.id===eid);
+    if(e&&e.status!=='paid'){chk.checked=true;selected.add(eid);document.querySelector(`.entry-item[data-eid="${eid}"]`)?.classList.add('sel');}
+  });
+  updateBab();
+}
+function clearSel(){
+  selected.clear();
+  document.querySelectorAll('.entry-sel-chk').forEach(chk=>chk.checked=false);
+  document.querySelectorAll('.entry-item').forEach(el=>el.classList.remove('sel'));
+  updateBab();
+}
+async function paySelected(){
+  if(!selected.size)return;
+  let total=0;
+  selected.forEach(eid=>{const e=state.entries.find(x=>x.id===eid);if(e){const{final}=calcEntry(e);total+=Math.max(0,final-getPaid(eid));}});
+  if(!confirm(`Pagar ${selected.size} lançamento(s)?\nTotal: ${fmtMoney(total)}`))return;
+  const date=todayISO();
+  for(const eid of selected){
+    const e=state.entries.find(x=>x.id===eid);if(!e)continue;
+    const saldo=calcEntry(e).final-getPaid(eid);
+    if(saldo<0.01)continue;
+    const pay={id:uid(),entryId:eid,amount:saldo,date,obs:'Pagamento múltiplo',paidBy:currentUser.name};
+    state.payments.push(pay);
+    e.status='paid';
+    await fbSet('payments',pay.id,pay);
+    await fbSet('entries',e.id,e);
+  }
+  clearSel();updateHeader();renderList();renderDashboard();
+  toast(`${selected.size} pagamentos registrados!`);
+}
 
+// ═══════════════════════════ ENTRY LIST
 function renderList(){
   const fname=(document.getElementById('f-name')?.value||'').toLowerCase();
   const ffrom=document.getElementById('f-from')?.value||'';
@@ -840,38 +945,37 @@ function renderList(){
   if(fdt)entries=entries.filter(e=>e.dayType===fdt);
   entries.sort((a,b)=>b.date.localeCompare(a.date)||a.employee.localeCompare(b.employee));
   const c=document.getElementById('entry-list');
-  if(!entries.length){c.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3)">Nenhum lançamento encontrado.</div>';updateSummary();return;}
+  if(!entries.length){c.innerHTML='<div style="text-align:center;padding:48px;color:var(--text3)">Nenhum lançamento.</div>';updateSummary();return;}
+  const isAdmin=currentUser.role==='admin';
   const grouped={};
   entries.forEach(e=>{if(!grouped[e.date])grouped[e.date]=[];grouped[e.date].push(e);});
-  const isAdmin=currentUser.role==='admin';
   let html='';
   Object.keys(grouped).sort((a,b)=>b.localeCompare(a)).forEach(date=>{
     const grp=grouped[date];
     const dayTot=grp.reduce((s,e)=>s+calcEntry(e).final,0);
-    html+=`<div style="margin-bottom:18px">
+    html+=`<div style="margin-bottom:16px">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:0 2px">
         <span style="font-size:13px;font-weight:700;color:var(--text2)">${fmtDate(date)} · ${wdName(date)}</span>
         <span class="dtag dtag-${grp[0].dayType}">${dayLabel(grp[0].dayType)}</span>
         <span style="margin-left:auto;font-size:12px;color:var(--text2)">Total: <strong>${fmtMoney(dayTot)}</strong></span>
       </div>`;
     grp.forEach(e=>{
-      const{mins,final}=calcEntry(e);
-      const paid=getPaid(e.id);
-      const saldo=final-paid;
-      const slbl={open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status];
-      html+=`<div class="entry-item">
-        <div style="min-width:100px">
+      const{mins,final}=calcEntry(e);const paid=getPaid(e.id);const saldo=final-paid;
+      const isSel=selected.has(e.id);
+      html+=`<div class="entry-item${isSel?' sel':''}" data-eid="${e.id}">
+        ${isAdmin&&e.status!=='paid'?`<input type="checkbox" class="entry-sel-chk e-chk" data-eid="${e.id}" ${isSel?'checked':''} onchange="toggleSel('${e.id}',this.checked)">`:'<div style="width:16px"></div>'}
+        <div>
           <div class="e-name">${e.employee}</div>
-          <div class="e-times">${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</div>
+          <div class="e-times">${e.in1}–${e.out1}${e.in2?` / ${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</div>
           <div class="e-hrs">${fmtHours(mins)}</div>
         </div>
-        <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-left:auto">
-          <span class="status status-${e.status}">${slbl}</span>
+        <div style="display:flex;gap:7px;align-items:center;flex-wrap:wrap;margin-left:auto">
+          <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
           <div class="e-val">${fmtMoney(final)}</div>
           ${saldo>0.01?`<span style="font-size:11px;color:var(--amber)">Saldo: ${fmtMoney(saldo)}</span>`:''}
         </div>
-        <div style="display:flex;gap:5px">
-          ${isAdmin?`<button class="btn btn-xs btn-green" onclick="openPay('${e.id}')">💰 Pagar</button>`:''}
+        <div style="display:flex;gap:5px;flex-shrink:0">
+          ${isAdmin?`<button class="btn btn-xs btn-green" onclick="openPay('${e.id}')">💰</button>`:''}
           ${isAdmin?`<button class="btn btn-xs btn-secondary" onclick="delEntry('${e.id}')" style="color:var(--red)">✕</button>`:''}
         </div>
       </div>`;
@@ -886,16 +990,15 @@ async function delEntry(id){
   if(!confirm('Remover este lançamento?'))return;
   state.entries=state.entries.filter(e=>e.id!==id);
   state.payments=state.payments.filter(p=>p.entryId!==id);
+  selected.delete(id);
   await fbDel('entries',id);
   renderList();updateHeader();renderDashboard();
 }
-
 function clearF(){
   ['f-name','f-from','f-to'].forEach(i=>document.getElementById(i).value='');
   ['f-status','f-dtype'].forEach(i=>document.getElementById(i).value='');
   renderList();
 }
-
 function updateSummary(){
   let open=0,paid=0;
   state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
@@ -904,40 +1007,108 @@ function updateSummary(){
   document.getElementById('s-total').textContent=fmtMoney(open+paid);
   document.getElementById('s-count').textContent=state.entries.length;
 }
-
 function updateHeader(){
   let open=0,paid=0;
   state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
-  document.getElementById('hdr-open').textContent=`Aberto ${fmtMoney(open)}`;
-  document.getElementById('hdr-paid').textContent=`Pago ${fmtMoney(paid)}`;
+  document.getElementById('hdr-open').textContent=fmtMoney(open);
+  document.getElementById('hdr-paid').textContent=fmtMoney(paid);
 }
 
-// ══════════════════════════ PAGAMENTO
+// ═══════════════════════════ FECHAR MÊS
+function openCloseMonth(){
+  const month=document.getElementById('close-month').value;
+  const empFilter=document.getElementById('close-emp').value;
+  if(!month){toast('Selecione o mês.');return;}
+  const entries=state.entries.filter(e=>{
+    if(!e.date.startsWith(month))return false;
+    if(e.status==='paid')return false;
+    const saldo=calcEntry(e).final-getPaid(e.id);
+    if(saldo<0.01)return false;
+    if(empFilter&&e.employee!==empFilter)return false;
+    return true;
+  });
+  if(!entries.length){toast('Nenhum lançamento em aberto para este período.');return;}
+  const byEmp={};
+  entries.forEach(e=>{
+    if(!byEmp[e.employee])byEmp[e.employee]={entries:[],total:0};
+    const s=calcEntry(e).final-getPaid(e.id);
+    byEmp[e.employee].entries.push(e);byEmp[e.employee].total+=s;
+  });
+  const [y,m]=month.split('-');
+  document.getElementById('cm-title').textContent=`Fechar ${m}/${y}`;
+  document.getElementById('cm-body').innerHTML=`
+    <p style="font-size:13px;color:var(--text2);margin-bottom:14px">Selecione os funcionários para marcar como pago:</p>
+    ${Object.keys(byEmp).map(n=>{
+      const emp=state.employees.find(x=>x.name===n);
+      return`<div class="emp-close-item">
+        <input type="checkbox" id="cm-${n.replace(/\s/g,'_')}" checked>
+        <div style="flex:1">
+          <div style="font-weight:700">${n}</div>
+          ${emp?.pix?`<div style="font-size:12px;color:var(--text2)">Pix: ${emp.pix}</div>`:''}
+          <div style="font-size:12px;color:var(--text3)">${byEmp[n].entries.length} lançamento(s)</div>
+        </div>
+        <div style="font-weight:800;font-size:15px;color:var(--amber)">${fmtMoney(byEmp[n].total)}</div>
+      </div>`;
+    }).join('')}
+    <hr>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <div style="flex:1"><label>Data do pagamento</label><input type="date" id="cm-date" value="${todayISO()}" style="width:140px"></div>
+      <div style="flex:1"><label>Observação</label><input type="text" id="cm-obs" placeholder="Ex: Fechamento julho" style="width:100%"></div>
+    </div>
+    <div class="btns" style="margin-top:14px">
+      <button class="btn btn-green" onclick="confirmCloseMonth(${JSON.stringify(byEmp).replace(/"/g,'&quot;')})">✓ Confirmar fechamento</button>
+      <button class="btn btn-secondary" onclick="closeCloseModal()">Cancelar</button>
+    </div>`;
+  document.getElementById('close-modal').classList.add('open');
+}
+
+async function confirmCloseMonth(byEmp){
+  const date=document.getElementById('cm-date').value;
+  const obs=document.getElementById('cm-obs').value||'Fechamento de mês';
+  if(!date){toast('Informe a data.');return;}
+  let count=0;
+  for(const n of Object.keys(byEmp)){
+    const chk=document.getElementById('cm-'+n.replace(/\s/g,'_'));
+    if(!chk?.checked)continue;
+    const entries=state.entries.filter(e=>e.employee===n&&e.status!=='paid'&&(calcEntry(e).final-getPaid(e.id))>0.01);
+    for(const e of entries){
+      const saldo=calcEntry(e).final-getPaid(e.id);
+      const pay={id:uid(),entryId:e.id,amount:saldo,date,obs,paidBy:currentUser.name};
+      state.payments.push(pay);e.status='paid';
+      await fbSet('payments',pay.id,pay);
+      await fbSet('entries',e.id,e);
+      count++;
+    }
+  }
+  closeCloseModal();clearSel();updateHeader();renderList();renderDashboard();
+  toast(`Fechamento concluído — ${count} lançamento(s) pagos!`);
+}
+function closeCloseModal(){document.getElementById('close-modal').classList.remove('open');}
+
+// ═══════════════════════════ PAGAMENTO INDIVIDUAL
 let payingId=null;
 function openPay(eid){
   if(currentUser.role!=='admin'){toast('Sem permissão.');return;}
   payingId=eid;
   const e=state.entries.find(x=>x.id===eid);if(!e)return;
-  const{final}=calcEntry(e);
-  const paid=getPaid(eid);
-  const saldo=Math.max(0,final-paid);
+  const{final}=calcEntry(e);const paid=getPaid(eid);const saldo=Math.max(0,final-paid);
   const emp=state.employees.find(x=>x.name.toLowerCase()===e.employee.toLowerCase());
   const history=state.payments.filter(p=>p.entryId===eid).sort((a,b)=>b.date.localeCompare(a.date));
-  document.getElementById('modal-title').textContent=`Pagamento — ${e.employee} · ${fmtDate(e.date)}`;
+  document.getElementById('modal-title').textContent=`${e.employee} · ${fmtDate(e.date)}`;
   document.getElementById('modal-body').innerHTML=`
-    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:16px">
-      <div class="sum-card"><div class="sum-label">Devido</div><div class="sum-value" style="font-size:17px">${fmtMoney(final)}</div></div>
-      <div class="sum-card"><div class="sum-label">Pago</div><div class="sum-value" style="font-size:17px;color:var(--green)">${fmtMoney(paid)}</div></div>
-      <div class="sum-card"><div class="sum-label">Saldo</div><div class="sum-value" style="font-size:17px;color:${saldo>0.01?'var(--red)':'var(--green)'}">${fmtMoney(saldo)}</div></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:14px">
+      <div class="sum-card"><div class="sum-label">Devido</div><div class="sum-value" style="font-size:16px">${fmtMoney(final)}</div></div>
+      <div class="sum-card"><div class="sum-label">Pago</div><div class="sum-value" style="font-size:16px;color:var(--green)">${fmtMoney(paid)}</div></div>
+      <div class="sum-card"><div class="sum-label">Saldo</div><div class="sum-value" style="font-size:16px;color:${saldo>0.01?'var(--red)':'var(--green)'}">${fmtMoney(saldo)}</div></div>
     </div>
-    ${emp?.pix?`<div style="font-size:13px;color:var(--text2);margin-bottom:12px;padding:8px 12px;background:var(--accent-bg);border-radius:var(--radius)">Pix: <strong>${emp.pix}</strong></div>`:''}
+    ${emp?.pix?`<div style="font-size:13px;margin-bottom:12px;padding:8px 12px;background:var(--accent-bg);border-radius:var(--radius)">Pix: <strong>${emp.pix}</strong></div>`:''}
     <div class="grid-2" style="margin-bottom:10px">
       <div><label>Valor (R$)</label><input type="number" id="p-amt" value="${saldo.toFixed(2)}" step="0.01" min="0"></div>
       <div><label>Data</label><input type="date" id="p-date" value="${todayISO()}"></div>
     </div>
-    <div style="margin-bottom:14px"><label>Observação / comprovante</label><input type="text" id="p-obs" placeholder="Nº da transação, observação..."></div>
-    <div class="btns" style="margin-bottom:16px">
-      <button class="btn btn-green" onclick="confirmPay()">✓ Confirmar pagamento</button>
+    <div style="margin-bottom:14px"><label>Observação</label><input type="text" id="p-obs" placeholder="Nº da transação..."></div>
+    <div class="btns" style="margin-bottom:14px">
+      <button class="btn btn-green" onclick="confirmPay()">✓ Confirmar</button>
       <button class="btn btn-secondary" onclick="closeModal()">Cancelar</button>
     </div>
     ${history.length?`<hr><div style="font-size:12px;font-weight:700;color:var(--text2);margin:10px 0 6px">Histórico</div>
@@ -949,12 +1120,11 @@ function openPay(eid){
     </div>`).join('')}`:''}`;
   document.getElementById('pay-modal').classList.add('open');
 }
-
 async function confirmPay(){
   const amt=parseFloat(document.getElementById('p-amt').value);
   const date=document.getElementById('p-date').value;
   const obs=document.getElementById('p-obs').value;
-  if(!amt||amt<=0){toast('Informe um valor válido.');return;}
+  if(!amt||amt<=0){toast('Informe um valor.');return;}
   if(!date){toast('Informe a data.');return;}
   const pay={id:uid(),entryId:payingId,amount:amt,date,obs,paidBy:currentUser.name};
   state.payments.push(pay);
@@ -963,7 +1133,6 @@ async function confirmPay(){
   closeModal();renderList();updateHeader();renderDashboard();
   toast('Pagamento registrado!');
 }
-
 async function delPay(pid){
   const p=state.payments.find(x=>x.id===pid);
   state.payments=state.payments.filter(x=>x.id!==pid);
@@ -971,43 +1140,28 @@ async function delPay(pid){
   await fbDel('payments',pid);
   openPay(payingId);renderList();updateHeader();
 }
-
 function updateEntryStatus(eid){
   const e=state.entries.find(x=>x.id===eid);if(!e)return;
   const{final}=calcEntry(e);const paid=getPaid(eid);
   e.status=paid>=final-0.01?'paid':paid>0?'partial':'open';
   fbSet('entries',e.id,e);
 }
-
 function closeModal(){document.getElementById('pay-modal').classList.remove('open');payingId=null;}
 
-// ══════════════════════════ REPORT
+// ═══════════════════════════ RELATÓRIO
 function renderReport(){
   const sel=document.getElementById('r-emp');
   const cur=sel.value;
   sel.innerHTML='<option value="">Todos</option>'+state.employees.map(e=>`<option value="${e.name}" ${e.name===cur?'selected':''}>${e.name}</option>`).join('');
-  const eF=sel.value,fF=document.getElementById('r-from').value,tF=document.getElementById('r-to').value,sF=document.getElementById('r-status').value;
+  const eF=sel.value,fF=document.getElementById('r-from').value,tF=document.getElementById('r-to').value;
+  const view=document.getElementById('r-view').value;
   let entries=[...state.entries];
   if(eF)entries=entries.filter(e=>e.employee===eF);
   if(fF)entries=entries.filter(e=>e.date>=fF);
   if(tF)entries=entries.filter(e=>e.date<=tF);
-  if(sF)entries=entries.filter(e=>e.status===sF);
   entries.sort((a,b)=>b.date.localeCompare(a.date)||a.employee.localeCompare(b.employee));
-  let totM=0,totV=0;
-  document.getElementById('r-body').innerHTML=entries.map(e=>{
-    const{mins,final}=calcEntry(e);const paid=getPaid(e.id);
-    totM+=mins;totV+=final;
-    return`<tr>
-      <td>${e.employee}</td><td>${fmtDate(e.date)}</td>
-      <td><span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span></td>
-      <td style="font-family:monospace;font-size:12px">${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</td>
-      <td>${fmtHours(mins)}</td><td><strong>${fmtMoney(final)}</strong></td>
-      <td><span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span></td>
-      <td style="color:var(--green)">${paid>0?fmtMoney(paid):'—'}</td>
-    </tr>`;
-  }).join('')||'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)">Nenhum dado.</td></tr>';
-  document.getElementById('r-tot-h').textContent=fmtHours(totM);
-  document.getElementById('r-tot-v').textContent=fmtMoney(totV);
+
+  // By employee summary
   const byEmp={};
   entries.forEach(e=>{
     if(!byEmp[e.employee])byEmp[e.employee]={mins:0,val:0,paid:0,count:0};
@@ -1016,17 +1170,79 @@ function renderReport(){
     byEmp[e.employee].paid+=getPaid(e.id);byEmp[e.employee].count++;
   });
   const emps=Object.keys(byEmp);
-  document.getElementById('r-by-emp').innerHTML=emps.length>1?emps.map(n=>`
+  document.getElementById('r-by-emp').innerHTML=emps.map(n=>`
     <div class="sum-card">
       <div class="sum-label">${n}</div>
       <div class="sum-value" style="font-size:16px">${fmtMoney(byEmp[n].val)}</div>
       <div class="sum-sub">${fmtHours(byEmp[n].mins)} · ${byEmp[n].count} dias</div>
       <div class="sum-sub" style="color:var(--green)">Pago: ${fmtMoney(byEmp[n].paid)}</div>
       <div class="sum-sub" style="color:var(--red)">Saldo: ${fmtMoney(byEmp[n].val-byEmp[n].paid)}</div>
-    </div>`).join(''):'';
+    </div>`).join('');
+
+  const cont=document.getElementById('r-content');
+  if(view==='weekly'){
+    // Group by ISO week
+    const byWeek={};
+    entries.forEach(e=>{
+      const d=new Date(e.date+'T12:00:00');
+      const dow=d.getDay();const diff=d.getDate()-(dow===0?6:dow-1);
+      const mon=new Date(d);mon.setDate(diff);
+      const wk=mon.toISOString().slice(0,10);
+      if(!byWeek[wk])byWeek[wk]={entries:[],total:0,mins:0};
+      const{mins,final}=calcEntry(e);
+      byWeek[wk].entries.push(e);byWeek[wk].total+=final;byWeek[wk].mins+=mins;
+    });
+    const weeks=Object.keys(byWeek).sort((a,b)=>b.localeCompare(a));
+    cont.innerHTML=weeks.length?weeks.map(wk=>{
+      const end=new Date(wk+'T12:00:00');end.setDate(end.getDate()+5);
+      const endISO=end.toISOString().slice(0,10);
+      const grp=byWeek[wk];
+      return`<div class="week-card">
+        <div class="week-header">
+          <div class="week-title">Semana ${fmtDate(wk)} – ${fmtDate(endISO)}</div>
+          <span style="font-size:11px;color:var(--text3)">${fmtHours(grp.mins)}</span>
+          <div class="week-total">${fmtMoney(grp.total)}</div>
+        </div>
+        ${grp.entries.map(e=>{
+          const{mins,final}=calcEntry(e);const paid=getPaid(e.id);
+          return`<div class="week-row">
+            <span style="font-size:11px;color:var(--text3);width:28px">${wdName(e.date)}</span>
+            <span style="font-weight:600">${e.employee}</span>
+            <span style="font-family:monospace;font-size:12px;color:var(--text2)">${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}</span>
+            <span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span>
+            <span style="color:var(--text2);font-size:12px">${fmtHours(mins)}</span>
+            <strong style="margin-left:auto">${fmtMoney(final)}</strong>
+            <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
+            ${currentUser.role==='admin'?`<button class="btn btn-xs btn-green" onclick="openPay('${e.id}')">💰</button>`:''}
+          </div>`;
+        }).join('')}
+      </div>`;
+    }).join(''):'<div style="text-align:center;padding:24px;color:var(--text3)">Nenhum dado.</div>';
+  }else{
+    let totM=0,totV=0;
+    const rows=entries.map(e=>{
+      const{mins,final}=calcEntry(e);const paid=getPaid(e.id);
+      totM+=mins;totV+=final;
+      return`<tr>
+        <td>${e.employee}</td><td>${fmtDate(e.date)}</td>
+        <td><span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span></td>
+        <td style="font-family:monospace;font-size:12px">${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</td>
+        <td>${fmtHours(mins)}</td><td><strong>${fmtMoney(final)}</strong></td>
+        <td><span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span></td>
+        <td style="color:var(--green)">${paid>0?fmtMoney(paid):'—'}</td>
+      </tr>`;
+    });
+    cont.innerHTML=`<div class="card" style="padding:0"><div class="tbl-wrap">
+      <table class="rep-table">
+        <thead><tr><th>Funcionário</th><th>Data</th><th>Tipo</th><th>Horários</th><th>Horas</th><th>Total</th><th>Status</th><th>Pago</th></tr></thead>
+        <tbody>${rows.join('')||'<tr><td colspan="8" style="text-align:center;padding:24px;color:var(--text3)">Nenhum dado.</td></tr>'}</tbody>
+        <tfoot><tr><td colspan="4">Total</td><td>${fmtHours(totM)}</td><td>${fmtMoney(totV)}</td><td colspan="2"></td></tr></tfoot>
+      </table>
+    </div></div>`;
+  }
 }
 
-// ══════════════════════════ EMPLOYEES
+// ═══════════════════════════ EMPLOYEES
 async function saveEmp(){
   const name=cap(document.getElementById('e-name').value.trim());
   const pix=document.getElementById('e-pix').value.trim();
@@ -1036,16 +1252,12 @@ async function saveEmp(){
   const emp={id:uid(),name,pix,obs};
   state.employees.push(emp);
   await fbSet('employees',emp.id,emp);
-  document.getElementById('e-name').value='';
-  document.getElementById('e-pix').value='';
-  document.getElementById('e-obs').value='';
+  document.getElementById('e-name').value='';document.getElementById('e-pix').value='';document.getElementById('e-obs').value='';
   renderEmps();toast('Funcionário salvo!');
 }
-
 function renderEmps(){
   const c=document.getElementById('emp-list');
   if(!state.employees.length){c.innerHTML='<div style="text-align:center;padding:40px;color:var(--text3)">Nenhum funcionário cadastrado.</div>';return;}
-  const isAdmin=currentUser.role==='admin';
   c.innerHTML=state.employees.map(e=>{
     const ents=state.entries.filter(x=>x.employee===e.name);
     const tVal=ents.reduce((s,x)=>s+calcEntry(x).final,0);
@@ -1054,25 +1266,20 @@ function renderEmps(){
     const ini=e.name.split(' ').slice(0,2).map(w=>w[0]).join('').toUpperCase();
     return`<div class="emp-card">
       <div class="emp-avatar">${ini}</div>
-      <div class="emp-info">
-        <div class="emp-name">${e.name}</div>
-        ${e.pix?`<div class="emp-pix">Pix: ${e.pix}</div>`:''}
-        ${e.obs?`<div class="emp-pix">${e.obs}</div>`:''}
-      </div>
+      <div class="emp-info"><div class="emp-name">${e.name}</div>${e.pix?`<div class="emp-pix">Pix: ${e.pix}</div>`:''}${e.obs?`<div class="emp-pix">${e.obs}</div>`:''}</div>
       <div class="emp-stats">
         <div class="emp-stat"><span class="sl">Dias</span><span class="sv">${ents.length}</span></div>
         <div class="emp-stat"><span class="sl">Total</span><span class="sv">${fmtMoney(tVal)}</span></div>
         <div class="emp-stat"><span class="sl">Pago</span><span class="sv" style="color:var(--green)">${fmtMoney(tPaid)}</span></div>
         <div class="emp-stat"><span class="sl">Saldo</span><span class="sv" style="color:${saldo>0.01?'var(--red)':'var(--green)'}">${fmtMoney(saldo)}</span></div>
       </div>
-      ${isAdmin?`<div class="btns" style="margin-left:auto">
+      <div class="btns" style="margin-left:auto">
         <button class="btn btn-secondary btn-sm" onclick="editEmp('${e.id}')">Editar</button>
         <button class="btn btn-xs" style="color:var(--red)" onclick="removeEmp('${e.id}')">✕</button>
-      </div>`:''}
+      </div>
     </div>`;
   }).join('');
 }
-
 async function editEmp(id){
   const e=state.employees.find(x=>x.id===id);if(!e)return;
   const n=prompt('Nome:',e.name);if(!n)return;
@@ -1080,7 +1287,6 @@ async function editEmp(id){
   e.name=cap(n.trim());e.pix=(p||'').trim();
   await fbSet('employees',e.id,e);renderEmps();
 }
-
 async function removeEmp(id){
   const e=state.employees.find(x=>x.id===id);
   if(!e||!confirm(`Remover ${e.name}?`))return;
@@ -1088,29 +1294,23 @@ async function removeEmp(id){
   await fbDel('employees',id);renderEmps();
 }
 
-// ══════════════════════════ RATES
+// ═══════════════════════════ RATES
 function renderRates(){
   document.getElementById('rate-body').innerHTML=RATE_LABELS.map(({key,label,unit})=>`
-    <tr><td>${label}</td>
-    <td><input type="number" id="rt-${key}" value="${Number(state.rates[key]).toFixed(2)}" step="0.50" min="0"> ${unit}</td>
-    </tr>`).join('');
+    <tr><td>${label}</td><td><input type="number" id="rt-${key}" value="${Number(state.rates[key]).toFixed(2)}" step="0.50" min="0"> ${unit}</td></tr>`).join('');
 }
-
 async function saveRates(){
   RATE_LABELS.forEach(({key})=>{const v=parseFloat(document.getElementById('rt-'+key)?.value);if(!isNaN(v))state.rates[key]=v;});
   await fbSet('config','rates',state.rates);toast('Valores salvos!');
 }
-
 async function resetRates(){
-  if(!confirm('Restaurar valores padrão?'))return;
-  state.rates={...DEF_RATES};
-  await fbSet('config','rates',state.rates);
-  renderRates();toast('Restaurado.');
+  if(!confirm('Restaurar padrão?'))return;
+  state.rates={...DEF_RATES};await fbSet('config','rates',state.rates);renderRates();toast('Restaurado.');
 }
 
-// ══════════════════════════ EXPORT
+// ═══════════════════════════ EXPORT
 function exportCSV(){
-  const rows2=[['Funcionário','Data','Dia','Tipo','E1','S1','E2','S2','Horas','Total','PGA','Final','Pago','Saldo','Status','Lançado por']];
+  const rows2=[['Funcionário','Data','Dia','Tipo','E1','S1','E2','S2','Horas','Bruto','PGA','Final','Pago','Saldo','Status','Lançado por']];
   [...state.entries].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{
     const{mins,gross,pga,final}=calcEntry(e);const paid=getPaid(e.id);
     rows2.push([e.employee,fmtDate(e.date),wdName(e.date),dayLabel(e.dayType),e.in1,e.out1,e.in2||'',e.out2||'',fmtHours(mins),gross.toFixed(2),pga.toFixed(2),final.toFixed(2),paid.toFixed(2),(final-paid).toFixed(2),e.status,e.launchedBy||'']);
@@ -1118,18 +1318,12 @@ function exportCSV(){
   dl(rows2.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n'),'diaristas.csv','text/csv');
   toast('CSV exportado!');
 }
-
 function exportJSON(){dl(JSON.stringify(state,null,2),'backup-diariapro.json','application/json');toast('Backup exportado!');}
-
 function importJSON(){
   const inp=document.createElement('input');inp.type='file';inp.accept='.json';
-  inp.onchange=ev=>{
-    const fr=new FileReader();
-    fr.onload=e=>{try{const data=JSON.parse(e.target.result);if(confirm('Substituir todos os dados?')){Object.assign(state,data);saveLocal();location.reload();}}catch(e){toast('Arquivo inválido.');}};
-    fr.readAsText(ev.target.files[0]);
-  };inp.click();
+  inp.onchange=ev=>{const fr=new FileReader();fr.onload=e=>{try{const data=JSON.parse(e.target.result);if(confirm('Substituir todos os dados?')){Object.assign(state,data);saveLocal();location.reload();}}catch(e){toast('Arquivo inválido.');}};fr.readAsText(ev.target.files[0]);};
+  inp.click();
 }
-
 async function clearAll(){
   if(currentUser.role!=='admin'){toast('Sem permissão.');return;}
   if(!confirm('APAGAR TUDO? Não pode ser desfeito!'))return;
@@ -1138,17 +1332,16 @@ async function clearAll(){
   if(useFirebase&&db){const cols=['entries','employees','payments'];for(const col of cols){const s=await db.collection(col).get();for(const d of s.docs)await d.ref.delete();}}
   location.reload();
 }
-
 function dl(content,filename,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();}
 
-// ══════════════════════════ TOAST
+// ═══════════════════════════ TOAST
 function toast(msg,dur=3000){
   const el=document.getElementById('toast');el.textContent=msg;el.style.opacity='1';
   clearTimeout(toast._t);toast._t=setTimeout(()=>el.style.opacity='0',dur);
 }
 
-// ══════════════════════════ BOOT
-if(checkSession()){startApp();}
+// ═══════════════════════════ BOOT
+if(checkSession())startApp();
 </script>
 </body>
 </html>
