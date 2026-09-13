@@ -1524,15 +1524,7 @@ function exportPDF(){
     </tbody><tfoot><tr class="total-row"><td colspan="3">TOTAL</td><td>${fmtHours(totMins)}</td><td>${fmtMoney(totVal)}</td><td class="pago">${fmtMoney(totPaid)}</td><td class="${totSaldo>0.01?'saldo':''}">${fmtMoney(totSaldo)}</td><td></td></tr></tfoot>
     </table></div>`;
   });
-  html+='
-<!-- MODAL: Editar lançamento -->
-<div id="edit-modal" class="modal-overlay" onclick="if(event.target===this)closeEdit()">
-  <div class="modal">
-    <div class="modal-title"><span>✏️ Editar lançamento</span><span class="modal-x" onclick="closeEdit()">×</span></div>
-    <div id="edit-body"></div>
-  </div>
-</div>
-</body></html>';
+  html+='</body></html>';
 
   const w=window.open('','_blank','width=900,height=700');
   if(!w){toast('Bloqueio de pop-up detectado. Permita no navegador.');return;}
