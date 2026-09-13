@@ -429,6 +429,7 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
         </select></div>
       <button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="exportCSV()">⬇ CSV</button>
       <button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="exportPDF()">🖨 PDF</button>
+      <button class="btn btn-secondary btn-sm" style="align-self:flex-end" onclick="exportPixPendentes()">💳 Pix pendentes</button>
     </div>
   </div>
   <div class="sum-grid" id="r-by-emp"></div>
@@ -700,6 +701,7 @@ function populateCloseEmp(){
 // DASHBOARD
 // ══════════════════════════════════════════════════════════
 function renderDashboard(){
+  const isAdmin=currentUser.role==='admin';
   let open=0,paid=0,totMins=0;
   state.entries.forEach(e=>{
     const{final,mins}=calcEntry(e);const p=getPaid(e.id);
@@ -710,16 +712,31 @@ function renderDashboard(){
   const mesVal=mesEnt.reduce((s,e)=>s+calcEntry(e).final,0);
   const mesDias=[...new Set(mesEnt.map(e=>e.date))].length;
 
-  document.getElementById('dash-top').innerHTML=`
-    <div class="sum-card navy"><div class="sum-label">Em aberto</div><div class="sum-value">${fmtMoney(open)}</div><div class="sum-sub">a pagar</div></div>
-    <div class="sum-card"><div class="sum-label">Total pago</div><div class="sum-value" style="color:var(--green)">${fmtMoney(paid)}</div></div>
-    <div class="sum-card"><div class="sum-label">Custo este mês</div><div class="sum-value">${fmtMoney(mesVal)}</div><div class="sum-sub">${mesDias} dias</div></div>
-    <div class="sum-card"><div class="sum-label">Horas totais</div><div class="sum-value">${fmtHours(totMins)}</div><div class="sum-sub">${state.entries.length} lançamentos</div></div>`;
+  // Alerta dias úteis sem lançamento
+  let semLanc=0;
+  for(let i=1;i<=7;i++){const d=new Date(Date.now()-i*864e5);const iso=d.toISOString().slice(0,10);const dow=d.getDay();if(dow===0||dow===6)continue;if(!state.entries.find(e=>e.date===iso))semLanc++;if(semLanc>=3)break;}
+  if(isAdmin){
+    document.getElementById('dash-top').innerHTML=`
+      <div class="sum-card navy"><div class="sum-label">Em aberto</div><div class="sum-value">${fmtMoney(open)}</div><div class="sum-sub">a pagar</div></div>
+      <div class="sum-card"><div class="sum-label">Total pago</div><div class="sum-value" style="color:var(--green)">${fmtMoney(paid)}</div></div>
+      <div class="sum-card"><div class="sum-label">Custo este mês</div><div class="sum-value">${fmtMoney(mesVal)}</div><div class="sum-sub">${mesDias} dias</div></div>
+      <div class="sum-card"><div class="sum-label">Horas totais</div><div class="sum-value">${fmtHours(totMins)}</div><div class="sum-sub">${state.entries.length} lançamentos</div></div>`;
+  }else{
+    const opEnt=state.entries.filter(e=>e.status!=='paid'&&e.date>=new Date(Date.now()-14*864e5).toISOString().slice(0,10));
+    document.getElementById('dash-top').innerHTML=`
+      <div class="sum-card navy"><div class="sum-label">Dias em aberto</div><div class="sum-value">${opEnt.length}</div><div class="sum-sub">aguardando pagamento</div></div>
+      <div class="sum-card"><div class="sum-label">Dias este mês</div><div class="sum-value">${mesDias}</div></div>
+      <div class="sum-card"><div class="sum-label">Horas lançadas</div><div class="sum-value">${fmtHours(totMins)}</div></div>`;
+  }
 
   const cutISO=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
   const overdue=state.entries.filter(e=>e.status!=='paid'&&(calcEntry(e).final-getPaid(e.id))>0.01&&e.date<cutISO).length;
-  document.getElementById('dash-alerts').innerHTML=overdue
-    ?`<div class="alert">⚠️ ${overdue} lançamento(s) em aberto há mais de 7 dias — <a href="#" onclick="goTab('lista');clearF();document.getElementById('f-status').value='open';renderList();return false" style="color:inherit;font-weight:700">Ver</a></div>`:'' ;
+  let alertsHtml='';
+  if(isAdmin){
+    if(overdue)alertsHtml+=`<div class="alert">⚠️ ${overdue} lançamento(s) em aberto há mais de 7 dias — <a href="#" onclick="goTab('lista');clearF();document.getElementById('f-status').value='open';renderList();return false" style="color:inherit;font-weight:700">Ver</a></div>`;
+    if(semLanc>0)alertsHtml+=`<div class="alert">📅 ${semLanc} dia(s) útil(is) recente(s) sem lançamento.</div>`;
+  }
+  document.getElementById('dash-alerts').innerHTML=alertsHtml;
 
   // Pendências
   const byEmp={};
@@ -739,10 +756,10 @@ function renderDashboard(){
         <div style="font-size:11px;color:var(--text3)">${e.count} dia(s) · desde ${fmtDate(e.oldest)}</div>
         ${empData?.pix?`<div style="font-size:11px;color:var(--text3)">Pix: ${empData.pix}</div>`:''}
         <div class="pend-val">${fmtMoney(e.saldo)}</div>
-        <div style="display:flex;gap:6px;flex-wrap:wrap">
-          ${currentUser.role==='admin'?`<button class="btn btn-xs btn-green" onclick="quickPayAll('${n}')">Pagar tudo</button>`:''}
+        ${isAdmin?`<div style="display:flex;gap:6px;flex-wrap:wrap">
+          <button class="btn btn-xs btn-green" onclick="quickPayAll('${n}')">Pagar tudo</button>
           <button class="btn btn-xs btn-secondary" onclick="openWA('${n}')">📲 Mensagem</button>
-        </div>
+        </div>`:''}
       </div>`;
     }).join('');
   }else{pEl.innerHTML='<div class="alert green">✅ Nenhuma pendência em aberto</div>';}
@@ -763,14 +780,16 @@ function renderDashboard(){
     }
   }
 
-  // Últimos 5
-  const recent=[...state.entries].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,5);
+  // Últimos lançamentos — operador vê só abertos 14 dias
+  const cut14=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
+  const recentSrc=isAdmin?state.entries:state.entries.filter(e=>e.status!=='paid'&&e.date>=cut14);
+  const recent=[...recentSrc].sort((a,b)=>b.date.localeCompare(a.date)||(b.createdAt||'').localeCompare(a.createdAt||'')).slice(0,8);
   document.getElementById('dash-recent').innerHTML=recent.length?recent.map(e=>{
     const{mins,final}=calcEntry(e);
     return`<div class="entry-item">
       <div><div class="e-name">${e.employee}</div><div class="e-times">${fmtDate(e.date)} · ${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}</div></div>
       <span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span>
-      <div class="e-val">${fmtMoney(final)}</div>
+      ${isAdmin?`<div class="e-val">${fmtMoney(final)}</div>`:''}
       <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
     </div>`;
   }).join(''):'<div style="color:var(--text3);font-size:13px;padding:8px 0">Nenhum lançamento ainda.</div>';
@@ -864,7 +883,7 @@ function getEmpHistory(name){
 
 function addRow(opts={}){
   const id='r'+(++rid);
-  rows.push({id,name:opts.name||'',in1:opts.in1||'',out1:opts.out1||'',in2:opts.in2||'',out2:opts.out2||'',pga:opts.pga||false,customRate:opts.customRate||''});
+  rows.push({id,name:opts.name||'',in1:opts.in1||'',out1:opts.out1||'',in2:opts.in2||'',out2:opts.out2||'',pga:opts.pga||false,customRate:opts.customRate||'',obs:opts.obs||''});
   renderRows();
 }
 
@@ -895,7 +914,12 @@ function renderRows(){
           oninput="setF('${r.id}','customRate',this.value?parseFloat(this.value):'')"
           title="Valor/hora manual — deixe vazio para usar a tabela padrão" style="text-align:right">
       </div>
-      <div class="row-prev" id="prev-${r.id}"></div>`;
+      <div class="row-prev" id="prev-${r.id}"></div>
+      <div style="grid-column:1/-1;margin-top:2px" class="row-obs-wrap">
+        <input type="text" placeholder="Observação (opcional)" value="${r.obs||''}"
+          oninput="setF('${r.id}','obs',this.value)"
+          style="font-size:12px;padding:4px 8px;border-color:var(--border);color:var(--text2)">
+      </div>`;
     c.appendChild(div);recalcRow(r.id);
   });
 }
@@ -986,7 +1010,7 @@ async function saveBulk(){
       id:uid(),date:iso,employee:emp,in1:r.in1,out1:r.out1,
       in2:r.in2||'',out2:r.out2||'',pga:r.pga,holiday:hol,dayType:dt,
       status:'open',createdAt:new Date().toISOString(),launchedBy:currentUser.name,
-      customRate:cr||0,
+      customRate:cr||0,obs:r.obs||'',
     };
     // Remove duplicata do mesmo dia+funcionário
     const dup=state.entries.find(e=>e.date===iso&&e.employee===emp);
@@ -1086,16 +1110,20 @@ async function paySelected(){
 // LISTA DE LANÇAMENTOS
 // ══════════════════════════════════════════════════════════
 function renderList(){
+  const isAdmin=currentUser.role==='admin';
   const fname=(document.getElementById('f-name')?.value||'').toLowerCase();
   const ffrom=document.getElementById('f-from')?.value||'';
   const fto=document.getElementById('f-to')?.value||'';
   const fst=document.getElementById('f-status')?.value||'';
   const fdt=document.getElementById('f-dtype')?.value||'';
+  const cut14op=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
   let entries=[...state.entries];
+  // Operador: só abertos e últimos 14 dias
+  if(!isAdmin)entries=entries.filter(e=>e.status!=='paid'&&e.date>=cut14op);
   if(fname)entries=entries.filter(e=>e.employee.toLowerCase().includes(fname));
   if(ffrom)entries=entries.filter(e=>e.date>=ffrom);
   if(fto)entries=entries.filter(e=>e.date<=fto);
-  if(fst)entries=entries.filter(e=>e.status===fst);
+  if(fst&&isAdmin)entries=entries.filter(e=>e.status===fst);
   if(fdt)entries=entries.filter(e=>e.dayType===fdt);
   entries.sort((a,b)=>b.date.localeCompare(a.date)||a.employee.localeCompare(b.employee));
   const c=document.getElementById('entry-list');
@@ -1126,7 +1154,7 @@ function renderList(){
         <div>
           <div class="e-name">${e.employee}${customRate?` <span style="font-size:11px;color:var(--accent)" title="Taxa manual R$${customRate}/h">✎</span>`:''}</div>
           <div class="e-times">${e.in1}–${e.out1}${e.in2?` / ${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</div>
-          <div class="e-hrs">${fmtHours(mins)}</div>
+          <div class="e-hrs">${fmtHours(mins)}${e.obs?` · <em style="color:var(--text3)">${e.obs}</em>`:''}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto">
           <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
@@ -1136,6 +1164,7 @@ function renderList(){
         <div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap">
           ${isAdmin?`<button class="btn btn-xs btn-green" onclick="openPay('${e.id}')">💰</button>`:''}
           ${isAdmin&&saldo>0.01?`<button class="btn btn-xs btn-secondary" onclick="openWA('${e.employee}')">📲</button>`:''}
+          ${e.status!=='paid'?`<button class="btn btn-xs btn-secondary" onclick="openEdit('${e.id}')" title="Editar lançamento">✏️</button>`:''}
           ${isAdmin?`<button class="btn btn-xs btn-secondary" style="color:var(--red)" onclick="delEntry('${e.id}')">✕</button>`:''}
         </div>
       </div>`;
@@ -1175,18 +1204,21 @@ function clearF(){
   ['f-status','f-dtype'].forEach(i=>document.getElementById(i).value='');renderList();
 }
 function updateSummary(){
+  const isAdmin=currentUser.role==='admin';
   let open=0,paid=0;
   state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
   document.getElementById('s-open').textContent=fmtMoney(open);
-  document.getElementById('s-paid').textContent=fmtMoney(paid);
-  document.getElementById('s-total').textContent=fmtMoney(open+paid);
+  document.getElementById('s-paid').textContent=isAdmin?fmtMoney(paid):'—';
+  document.getElementById('s-total').textContent=isAdmin?fmtMoney(open+paid):'—';
   document.getElementById('s-count').textContent=state.entries.length;
 }
 function updateHeader(){
+  const isAdmin=currentUser.role==='admin';
   let open=0,paid=0;
   state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
   document.getElementById('hdr-open').textContent=fmtMoney(open);
-  document.getElementById('hdr-paid').textContent=fmtMoney(paid);
+  document.getElementById('hdr-paid').textContent=isAdmin?fmtMoney(paid):'';
+  document.getElementById('hdr-paid').style.display=isAdmin?'':'none';
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1492,7 +1524,15 @@ function exportPDF(){
     </tbody><tfoot><tr class="total-row"><td colspan="3">TOTAL</td><td>${fmtHours(totMins)}</td><td>${fmtMoney(totVal)}</td><td class="pago">${fmtMoney(totPaid)}</td><td class="${totSaldo>0.01?'saldo':''}">${fmtMoney(totSaldo)}</td><td></td></tr></tfoot>
     </table></div>`;
   });
-  html+='</body></html>';
+  html+='
+<!-- MODAL: Editar lançamento -->
+<div id="edit-modal" class="modal-overlay" onclick="if(event.target===this)closeEdit()">
+  <div class="modal">
+    <div class="modal-title"><span>✏️ Editar lançamento</span><span class="modal-x" onclick="closeEdit()">×</span></div>
+    <div id="edit-body"></div>
+  </div>
+</div>
+</body></html>';
 
   const w=window.open('','_blank','width=900,height=700');
   if(!w){toast('Bloqueio de pop-up detectado. Permita no navegador.');return;}
@@ -1532,6 +1572,7 @@ function renderEmps(){
         <div class="emp-stat"><span class="sl">Total</span><span class="sv">${fmtMoney(tVal)}</span></div>
         <div class="emp-stat"><span class="sl">Pago</span><span class="sv" style="color:var(--green)">${fmtMoney(tPaid)}</span></div>
         <div class="emp-stat"><span class="sl">Saldo</span><span class="sv" style="color:${saldo>0.01?'var(--red)':'var(--green)'}">${fmtMoney(saldo)}</span></div>
+        ${(()=>{const c30=new Date(Date.now()-30*864e5).toISOString().slice(0,10);const r30=ents.filter(x=>x.date>=c30);const m30=r30.reduce((s,x)=>s+calcEntry(x).mins,0);const v30=r30.reduce((s,x)=>s+calcEntry(x).final,0);return r30.length?`<div class="emp-stat"><span class="sl">Média/dia (30d)</span><span class="sv">${fmtHours(Math.round(m30/r30.length))}</span></div><div class="emp-stat"><span class="sl">Custo médio (30d)</span><span class="sv">${fmtMoney(v30/r30.length)}</span></div>`:''})()}
       </div>
       <div class="btns" style="margin-left:auto">
         <button class="btn btn-secondary btn-sm" onclick="editEmp('${e.id}')">Editar</button>
@@ -1573,6 +1614,21 @@ async function resetRates(){
 // ══════════════════════════════════════════════════════════
 // EXPORT / IMPORT
 // ══════════════════════════════════════════════════════════
+function exportPixPendentes(){
+  const byEmp={};
+  state.entries.forEach(e=>{
+    const{final}=calcEntry(e);const saldo=final-getPaid(e.id);
+    if(saldo<0.01)return;
+    if(!byEmp[e.employee])byEmp[e.employee]={saldo:0,pix:''};
+    byEmp[e.employee].saldo+=saldo;
+    const emp=state.employees.find(x=>x.name===e.employee);
+    if(emp?.pix)byEmp[e.employee].pix=emp.pix;
+  });
+  const rows=[['Funcionário','Chave Pix','Valor']];
+  Object.keys(byEmp).sort().forEach(n=>rows.push([n,byEmp[n].pix||'(sem pix)',byEmp[n].saldo.toFixed(2).replace('.',',')]));
+  dl(rows.map(r=>r.map(c=>`"${c}"`).join(';')).join('\n'),'pix-pendentes.csv','text/csv');
+  toast('Lista Pix exportada!');
+}
 function exportCSV(){
   const rows2=[['Funcionário','Data','Dia','Tipo','E1','S1','E2','S2','Taxa/h','Horas','Bruto','PGA','Final','Pago','Saldo','Status','Lançado por']];
   [...state.entries].sort((a,b)=>b.date.localeCompare(a.date)).forEach(e=>{
@@ -1598,6 +1654,86 @@ async function clearAll(){
 }
 function dl(content,filename,mime){const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([content],{type:mime}));a.download=filename;a.click();}
 
+
+// ══════════════════════════════════════════════════════════
+// EDITAR LANÇAMENTO (admin e operador — só não-pagos)
+// ══════════════════════════════════════════════════════════
+let editingId=null;
+function openEdit(eid){
+  const e=state.entries.find(x=>x.id===eid);if(!e||e.status==='paid')return;
+  editingId=eid;
+  const{mins,final}=calcEntry(e);
+  document.getElementById('edit-body').innerHTML=`
+    <p style="font-size:12px;color:var(--text2);margin-bottom:12px">Funcionário: <strong>${e.employee}</strong> · Lançado por: ${e.launchedBy||'—'}</p>
+    <div class="grid-2" style="margin-bottom:10px">
+      <div><label>Data</label><input type="date" id="ed-date" value="${e.date}"></div>
+      <div><label>Funcionário</label><input type="text" id="ed-emp" value="${e.employee}"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+      <div><label>Entrada 1</label><input type="time" id="ed-in1" value="${e.in1}"></div>
+      <div><label>Saída 1</label><input type="time" id="ed-out1" value="${e.out1}"></div>
+      <div><label>Entrada 2</label><input type="time" id="ed-in2" value="${e.in2||''}"></div>
+      <div><label>Saída 2</label><input type="time" id="ed-out2" value="${e.out2||''}"></div>
+    </div>
+    <div style="display:flex;gap:16px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+      <label class="chk-label"><input type="checkbox" id="ed-pga" ${e.pga?'checked':''}> Desconto almoço</label>
+      <label class="chk-label"><input type="checkbox" id="ed-hol" ${e.holiday?'checked':''} onchange="edUpdateBadge()"> Feriado</label>
+      <span id="ed-badge" style="font-size:13px;font-weight:700"></span>
+    </div>
+    <div style="margin-bottom:10px"><label>R$/h manual (opcional)</label><input type="number" id="ed-cr" value="${e.customRate||''}" placeholder="deixe vazio = tabela padrão" step="0.50" min="0" style="width:160px"></div>
+    <div style="margin-bottom:14px"><label>Observação</label><input type="text" id="ed-obs" value="${e.obs||''}" placeholder="Opcional"></div>
+    <div id="ed-preview" style="font-size:13px;color:var(--green);font-weight:700;margin-bottom:12px"></div>
+    <div class="btns">
+      <button class="btn btn-primary" onclick="saveEdit()">✓ Salvar alterações</button>
+      <button class="btn btn-secondary" onclick="closeEdit()">Cancelar</button>
+    </div>`;
+  edUpdateBadge();
+  document.getElementById('edit-modal').classList.add('open');
+  ['ed-in1','ed-out1','ed-in2','ed-out2','ed-pga','ed-cr'].forEach(id=>{
+    const el=document.getElementById(id);if(el)el.addEventListener('input',edCalcPreview);el&&el.addEventListener('change',edCalcPreview);
+  });
+  edCalcPreview();
+}
+function edUpdateBadge(){
+  const iso=document.getElementById('ed-date')?.value||'';
+  const hol=document.getElementById('ed-hol')?.checked||false;
+  if(!iso)return;
+  const dt=getDayType(iso,hol);
+  const colors={weekday:'#1d4ed8',saturday:'#6d28d9',sunday:'#c2410c',holiday:'#b91c1c'};
+  const el=document.getElementById('ed-badge');
+  if(el)el.innerHTML=`<span style="color:${colors[dt]}">${wdName(iso)} · ${dayLabel(dt)}</span>`;
+  edCalcPreview();
+}
+function edCalcPreview(){
+  const iso=document.getElementById('ed-date')?.value;if(!iso)return;
+  const hol=document.getElementById('ed-hol')?.checked||false;
+  const fake={in1:document.getElementById('ed-in1')?.value||'',out1:document.getElementById('ed-out1')?.value||'',
+    in2:document.getElementById('ed-in2')?.value||'',out2:document.getElementById('ed-out2')?.value||'',
+    pga:document.getElementById('ed-pga')?.checked||false,
+    customRate:parseFloat(document.getElementById('ed-cr')?.value)||0,
+    dayType:getDayType(iso,hol)};
+  const{mins,final}=calcEntry(fake);
+  const el=document.getElementById('ed-preview');
+  if(el)el.textContent=mins>0?`Prévia: ${fmtHours(mins)} · ${fmtMoney(final)}`:'';
+}
+async function saveEdit(){
+  const e=state.entries.find(x=>x.id===editingId);if(!e)return;
+  const iso=document.getElementById('ed-date').value;
+  if(!iso){toast('Informe a data.');return;}
+  const hol=document.getElementById('ed-hol').checked;
+  const emp=cap(document.getElementById('ed-emp').value.trim())||e.employee;
+  const cr=parseFloat(document.getElementById('ed-cr').value)||0;
+  e.date=iso;e.employee=emp;e.in1=document.getElementById('ed-in1').value;
+  e.out1=document.getElementById('ed-out1').value;e.in2=document.getElementById('ed-in2').value;
+  e.out2=document.getElementById('ed-out2').value;e.pga=document.getElementById('ed-pga').checked;
+  e.holiday=hol;e.dayType=getDayType(iso,hol);e.customRate=cr;
+  e.obs=document.getElementById('ed-obs').value;
+  e.editedBy=currentUser.name;e.editedAt=new Date().toISOString();
+  await fbSet('entries',e.id,e);
+  closeEdit();renderList();renderDashboard();updateHeader();
+  toast('Lançamento atualizado!');
+}
+function closeEdit(){document.getElementById('edit-modal').classList.remove('open');editingId=null;}
 // ══════════════════════════════════════════════════════════
 // TOAST
 // ══════════════════════════════════════════════════════════
