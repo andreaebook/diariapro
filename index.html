@@ -503,6 +503,14 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
   </div>
 </div>
 
+  <!-- MODAL: Editar lançamento -->
+<div id="edit-modal" class="modal-overlay" onclick="if(event.target===this)closeEdit()">
+  <div class="modal">
+    <div class="modal-title"><span>✏️ Editar lançamento</span><span class="modal-x" onclick="closeEdit()">×</span></div>
+    <div id="edit-body"></div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════
 // AUTH
