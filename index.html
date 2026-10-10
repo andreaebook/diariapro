@@ -1197,8 +1197,8 @@ function renderList(){
           ${isAdmin?('<button class="btn btn-xs btn-green" onclick="openPay(\''+e.id+'\')">💰</button>'):''}
           ${isAdmin&&saldo>0.01?('<button class="btn btn-xs btn-secondary" onclick="openWA(\''+e.employee+'\')">📲</button>'):''}
           ${e.status!=='paid'?('<button class="btn btn-xs btn-secondary" onclick="openEdit(\''+e.id+'\')">✏️</button>'):''}
-          <button class="btn btn-xs btn-secondary" style="color:var(--red)" onclick="delEntry('"+e.id+"')">✕</button>
-          <button class="btn btn-xs btn-secondary" onclick="openHistModal('"+e.employee+"')" title="Histórico do funcionário" style="padding:2px 6px">&#128197;</button>
+          <button class="btn btn-xs btn-secondary" style="color:var(--red)" onclick="delEntry('${e.id}')">✕</button>
+          <button class="btn btn-xs btn-secondary" onclick="openHistModal('${e.employee}')" title="Histórico do funcionário" style="padding:2px 6px">&#128197;</button>
         </div>
       </div>`;
     });
