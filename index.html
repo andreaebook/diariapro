@@ -123,6 +123,9 @@ input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);cursor:po
   .bulk-row .row-custom-rate{grid-column:1/3}
   .bulk-row .row-prev{grid-column:1/-1;text-align:center;font-size:13px}
 }
+.adjust-chip{display:inline-block;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px;margin-left:4px;vertical-align:middle}
+.adjust-pos{background:var(--green-bg);color:var(--green);border:1px solid var(--green-bd)}
+.adjust-neg{background:var(--red-bg);color:var(--red);border:1px solid var(--red-bd)}
 .col-hdr{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.05em;padding:0 2px}
 .bulk-row input[type=time]{padding:5px 3px;font-size:13px}
 .bulk-row input[type=number]{padding:5px 4px;font-size:13px}
@@ -512,6 +515,22 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
   </div>
 </div>
 
+<!-- MODAL: Resumo do Dia -->
+<div id="day-modal" class="modal-overlay" onclick="if(event.target===this)closeDayModal()">
+  <div class="modal" style="max-width:600px">
+    <div class="modal-title"><span id="dm-title">Resumo do dia</span><span class="modal-x" onclick="closeDayModal()">×</span></div>
+    <div id="dm-body"></div>
+  </div>
+</div>
+
+<!-- MODAL: Histórico do Funcionário (incrementação especial) -->
+<div id="hist-modal" class="modal-overlay" onclick="if(event.target===this)closeHistModal()">
+  <div class="modal" style="max-width:680px">
+    <div class="modal-title"><span id="hm-title">Histórico</span><span class="modal-x" onclick="closeHistModal()">×</span></div>
+    <div id="hm-body"></div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════════════════════════
 // AUTH
@@ -658,6 +677,11 @@ function getPaid(eid){return state.payments.filter(p=>p.entryId===eid).reduce((s
 // CALC — suporta customRate por linha
 // ══════════════════════════════════════════════════════════
 function calcEntry(e){
+  if(e.calcFinal!==undefined&&e.calcMins!==undefined&&!e._forceRecalc){
+    const _f=Number(e.calcFinal);const _m=Number(e.calcMins);
+    const _pg=e.pga?Number(state.rates.pga):0;
+    return{mins:_m,gross:_f+_pg,pga:_pg,final:_f,customRate:e.customRate||null};
+  }
   const r=state.rates,dt=e.dayType;
   const cr=e.customRate&&e.customRate>0?e.customRate:null; // valor/h manual
   let mins=0;
@@ -890,7 +914,7 @@ function getEmpHistory(name){
 
 function addRow(opts={}){
   const id='r'+(++rid);
-  rows.push({id,name:opts.name||'',in1:opts.in1||'',out1:opts.out1||'',in2:opts.in2||'',out2:opts.out2||'',pga:opts.pga||false,customRate:opts.customRate||'',obs:opts.obs||''});
+  rows.push({id,name:opts.name||'',in1:opts.in1||'',out1:opts.out1||'',in2:opts.in2||'',out2:opts.out2||'',pga:opts.pga||false,customRate:opts.customRate||'',obs:opts.obs||'',adjust:opts.adjust||0,adjustObs:opts.adjustObs||''});
   renderRows();
 }
 
@@ -922,7 +946,11 @@ function renderRows(){
           title="Valor/hora manual — deixe vazio para usar a tabela padrão" style="text-align:right">
       </div>
       <div class="row-prev" id="prev-${r.id}"></div>
-      <div style="grid-column:1/-1;margin-top:2px"><input type="text" placeholder="Observação (opcional)" value="${r.obs||''}" oninput="setF('${r.id}','obs',this.value)" style="font-size:12px;padding:4px 8px;border-color:var(--border);color:var(--text2)"></div>`;
+      <div style="grid-column:1/-1;margin-top:2px;display:grid;grid-template-columns:1fr 100px 1fr;gap:6px">
+        <input type="text" placeholder="Observacao" value="${r.obs||''}" oninput="setF('${r.id}','obs',this.value)" style="font-size:12px;padding:4px 8px">
+        <input type="number" placeholder="Ajuste R$" value="${r.adjust||''}" step="0.50" oninput="setF('${r.id}','adjust',this.value?parseFloat(this.value):0)" title="+bonus/-desconto" style="font-size:12px;padding:4px 6px;text-align:right">
+        <input type="text" placeholder="Motivo..." value="${r.adjustObs||''}" oninput="setF('${r.id}','adjustObs',this.value)" style="font-size:12px;padding:4px 8px">
+      </div>`;
     c.appendChild(div);recalcRow(r.id);
   });
 }
@@ -960,8 +988,11 @@ function recalcRow(id){
   const hol=document.getElementById('bk-holiday').checked;
   if(!iso||!r.in1||!r.out1){el.textContent='';return;}
   const{mins,final,customRate}=calcEntry({...r,dayType:getDayType(iso,hol)});
+  const _rAdj=parseFloat(r.adjust)||0;
   if(mins>0){
-    el.textContent=`${fmtHours(mins)} · ${fmtMoney(final)}`;
+    el.textContent=fmtHours(mins)+' · '+fmtMoney(Math.max(0,final+_rAdj));
+    if(_rAdj>0)el.textContent+=' (+R$'+Math.abs(_rAdj).toFixed(2)+')';
+    else if(_rAdj<0)el.textContent+=' (-R$'+Math.abs(_rAdj).toFixed(2)+')';
     if(customRate)el.textContent+=' ✎';
     if(r.pga)el.textContent+=' 🍽';
   }else el.textContent='';
@@ -1009,18 +1040,21 @@ async function saveBulk(){
     if(!r.name.trim()||!r.in1||!r.out1){skip++;continue;}
     const emp=cap(r.name.trim());
     const cr=r.customRate&&parseFloat(r.customRate)>0?parseFloat(r.customRate):0;
+    const _rAdj2=parseFloat(r.adjust)||0;
+    const _snp=calcEntry({...r,dayType:dt,customRate:cr||0,_forceRecalc:true});
     const entry={
       id:uid(),date:iso,employee:emp,in1:r.in1,out1:r.out1,
       in2:r.in2||'',out2:r.out2||'',pga:r.pga,holiday:hol,dayType:dt,
       status:'open',createdAt:new Date().toISOString(),launchedBy:currentUser.name,
       customRate:cr||0,obs:r.obs||'',
+      adjust:_rAdj2,adjustObs:r.adjustObs||'',
+      calcFinal:Math.max(0,_snp.final+_rAdj2),calcMins:_snp.mins,
     };
-    // Remove duplicata do mesmo dia+funcionário
-    const dup=state.entries.find(e=>e.date===iso&&e.employee===emp);
-    if(dup){
-      state.entries=state.entries.filter(e=>!(e.date===iso&&e.employee===emp));
-      if(useFirebase&&db)try{await db.collection('entries').doc(dup.id).delete();}catch(e){}
-    }
+    const _sd=state.entries.filter(ex=>ex.date===iso&&ex.employee===emp);
+    let _cf=false;
+    const _ni=[[toMins(r.in1),toMins(r.out1)],[toMins(r.in2),toMins(r.out2)]].filter(([a,b])=>a!==null&&b!==null&&b>a);
+    for(const _ex of _sd){const _ei=[[toMins(_ex.in1),toMins(_ex.out1)],[toMins(_ex.in2),toMins(_ex.out2)]].filter(([a,b])=>a!==null&&b!==null&&b>a);for(const [na,nb] of _ni){for(const [ea,eb] of _ei){if(na<eb&&nb>ea){_cf=true;break;}}}}
+    if(_cf){toast('Conflito: '+emp+' já tem horário sobreposto neste dia.');skip++;continue;}
     state.entries.push(entry);
     // Auto-cadastra funcionário
     if(!state.employees.find(e=>e.name.toLowerCase()===emp.toLowerCase())){
@@ -1121,7 +1155,7 @@ function renderList(){
   const fst=document.getElementById('f-status')?.value||'';
   const fdt=document.getElementById('f-dtype')?.value||'';
   let entries=[...state.entries];
-  if(!isAdmin)entries=entries.filter(e=>e.status!=='paid'&&e.date>=_cut14op);
+  if(!isAdmin)entries=entries.filter(e=>e.date>=_cut14op);
   if(fname)entries=entries.filter(e=>e.employee.toLowerCase().includes(fname));
   if(ffrom)entries=entries.filter(e=>e.date>=ffrom);
   if(fto)entries=entries.filter(e=>e.date<=fto);
@@ -1142,6 +1176,7 @@ function renderList(){
       +'<span class="dtag dtag-'+grp[0].dayType+'">'+dayLabel(grp[0].dayType)+'</span>'
       +(isAdmin?'<span style="margin-left:auto;font-size:12px;color:var(--text2)">Total: <strong>'+fmtMoney(dayTot)+'</strong>'+(dayOpen>0.01?' · Aberto: <strong style=\"color:var(--amber)\">'+fmtMoney(dayOpen)+'</strong>':'')+'</span>':'<span style="margin-left:auto"></span>')
       +(isAdmin&&dayOpen>0.01?'<button class="btn btn-xs btn-green" onclick="payDay(\''+date+'\')">Pagar dia</button>':'')
+      +'<button class="btn btn-xs btn-secondary" onclick="openDayModal(\''+date+'\')" style="margin-left:4px">&#128202; Resumo</button>'
       +'</div>';
     grp.forEach(e=>{
       const{mins,final,customRate}=calcEntry(e);const paid=getPaid(e.id);const saldo=final-paid;
@@ -1151,7 +1186,7 @@ function renderList(){
         <div>
           <div class="e-name">${e.employee}${customRate?` <span style="font-size:11px;color:var(--accent)" title="Taxa manual R$${customRate}/h">✎</span>`:''}</div>
           <div class="e-times">${e.in1}–${e.out1}${e.in2?` / ${e.in2}–${e.out2}`:''}${e.pga?' 🍽':''}</div>
-          <div class="e-hrs">${fmtHours(mins)}${e.obs?' · <em style="color:var(--text3)">'+e.obs+'</em>':''}</div>
+          <div class="e-hrs">${fmtHours(mins)}${e.obs?' · <em style="color:var(--text3)">'+e.obs+'</em>':''}${e.adjust?'<span class="adjust-chip '+(e.adjust>0?'adjust-pos':'adjust-neg')+'">'+(e.adjust>0?'+':'')+fmtMoney(e.adjust)+(e.adjustObs?' · '+e.adjustObs:'')+'</span>':''}</div>
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto">
           <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
@@ -1162,7 +1197,8 @@ function renderList(){
           ${isAdmin?('<button class="btn btn-xs btn-green" onclick="openPay(\''+e.id+'\')">💰</button>'):''}
           ${isAdmin&&saldo>0.01?('<button class="btn btn-xs btn-secondary" onclick="openWA(\''+e.employee+'\')">📲</button>'):''}
           ${e.status!=='paid'?('<button class="btn btn-xs btn-secondary" onclick="openEdit(\''+e.id+'\')">✏️</button>'):''}
-          ${isAdmin?('<button class="btn btn-xs btn-secondary" style="color:var(--red)" onclick="delEntry(\''+e.id+'\')">✕</button>'):''}
+          <button class="btn btn-xs btn-secondary" style="color:var(--red)" onclick="delEntry('"+e.id+"')">✕</button>
+          <button class="btn btn-xs btn-secondary" onclick="openHistModal('"+e.employee+"')" title="Histórico do funcionário" style="padding:2px 6px">&#128197;</button>
         </div>
       </div>`;
     });
@@ -1189,7 +1225,6 @@ async function payDay(date){
 }
 
 async function delEntry(id){
-  if(currentUser.role!=='admin'){toast('Sem permissão.');return;}
   if(!confirm('Remover este lançamento?'))return;
   state.entries=state.entries.filter(e=>e.id!==id);
   state.payments=state.payments.filter(p=>p.entryId!==id);
@@ -1202,12 +1237,13 @@ function clearF(){
 }
 function updateSummary(){
   const _adm=(currentUser.role==='admin');
+  const _cut14s=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
   let open=0,paid=0;
   state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
-  document.getElementById('s-open').textContent=fmtMoney(open);
+  document.getElementById('s-open').textContent=_adm?fmtMoney(open):'—';
   document.getElementById('s-paid').textContent=_adm?fmtMoney(paid):'—';
   document.getElementById('s-total').textContent=_adm?fmtMoney(open+paid):'—';
-  document.getElementById('s-count').textContent=state.entries.length;
+  document.getElementById('s-count').textContent=_adm?state.entries.length:state.entries.filter(e=>e.date>=_cut14s).length;
 }
 function updateHeader(){
   const _adm=(currentUser.role==='admin');
@@ -1522,7 +1558,7 @@ function exportPDF(){
     </tbody><tfoot><tr class="total-row"><td colspan="3">TOTAL</td><td>${fmtHours(totMins)}</td><td>${fmtMoney(totVal)}</td><td class="pago">${fmtMoney(totPaid)}</td><td class="${totSaldo>0.01?'saldo':''}">${fmtMoney(totSaldo)}</td><td></td></tr></tfoot>
     </table></div>`;
   });
-  htm
+  html+='</body></html>';
 
   const w=window.open('','_blank','width=900,height=700');
   if(!w){toast('Bloqueio de pop-up detectado. Permita no navegador.');return;}
@@ -1659,7 +1695,10 @@ function openEdit(eid){
     +'<label class="chk-label"><input type="checkbox" id="ed-hol" '+(e.holiday?'checked':'')+' onchange="edBadge()"> Feriado</label>'
     +'<span id="ed-badge" style="font-size:13px;font-weight:700"></span></div>'
     +'<div style="margin-bottom:10px"><label>R$/h manual (opcional)</label><input type="number" id="ed-cr" value="'+(e.customRate||'')+'" placeholder="vazio = tabela padrao" step="0.50" min="0" style="width:160px" oninput="edPreview()"></div>'
-    +'<div style="margin-bottom:12px"><label>Observacao</label><input type="text" id="ed-obs" value="'+(e.obs||'')+'" placeholder="Opcional"></div>'
+    +'<div style="margin-bottom:10px"><label>Observacao</label><input type="text" id="ed-obs" value="'+(e.obs||'')+'" placeholder="Opcional"></div>'
+    +'<div class="grid-2" style="margin-bottom:12px">'
+    +'<div><label>Ajuste R$ (+ bonus / - desconto)</label><input type="number" id="ed-adj" value="'+(e.adjust||0)+'" step="0.50" placeholder="0" oninput="edPreview()"></div>'
+    +'<div><label>Motivo do ajuste</label><input type="text" id="ed-adjobs" value="'+(e.adjustObs||'')+'" placeholder="Ex: bonus, adiantamento..."></div></div>'
     +'<div id="ed-prev" style="font-size:13px;color:var(--green);font-weight:700;margin-bottom:12px"></div>'
     +'<div class="btns"><button class="btn btn-primary" onclick="saveEdit()">Salvar</button><button class="btn btn-secondary" onclick="closeEdit()">Cancelar</button></div>';
   edBadge();
@@ -1679,8 +1718,10 @@ function edPreview(){
   const hol=document.getElementById('ed-hol')?.checked||false;
   const fake={in1:document.getElementById('ed-in1')?.value||'',out1:document.getElementById('ed-out1')?.value||'',in2:document.getElementById('ed-in2')?.value||'',out2:document.getElementById('ed-out2')?.value||'',pga:document.getElementById('ed-pga')?.checked||false,customRate:parseFloat(document.getElementById('ed-cr')?.value)||0,dayType:getDayType(iso,hol)};
   const{mins,final}=calcEntry(fake);
+  const _eAdj=parseFloat(document.getElementById('ed-adj')?.value)||0;
+  const _eFinal=Math.max(0,final+_eAdj);
   const _el=document.getElementById('ed-prev');
-  if(_el)_el.textContent=mins>0?'Previa: '+fmtHours(mins)+' - '+fmtMoney(final):'';
+  if(_el)_el.textContent=mins>0?('Previa: '+fmtHours(mins)+' - '+fmtMoney(_eFinal)+(_eAdj?' (ajuste '+(_eAdj>0?'+':'')+fmtMoney(_eAdj)+')'  :'')):'';
 }
 async function saveEdit(){
   const e=state.entries.find(x=>x.id===editingId);if(!e)return;
@@ -1692,11 +1733,124 @@ async function saveEdit(){
   e.pga=document.getElementById('ed-pga').checked;e.holiday=hol;e.dayType=getDayType(iso,hol);
   e.customRate=parseFloat(document.getElementById('ed-cr').value)||0;
   e.obs=document.getElementById('ed-obs').value;
+  e.adjust=parseFloat(document.getElementById('ed-adj')?.value)||0;
+  e.adjustObs=document.getElementById('ed-adjobs')?.value||'';
+  const _eSnp=calcEntry({...e,_forceRecalc:true});
+  e.calcFinal=Math.max(0,_eSnp.final+e.adjust);e.calcMins=_eSnp.mins;
   e.editedBy=currentUser.name;e.editedAt=new Date().toISOString();
   await fbSet('entries',e.id,e);
   closeEdit();renderList();updateHeader();renderDashboard();toast('Lancamento atualizado!');
 }
 function closeEdit(){document.getElementById('edit-modal').classList.remove('open');editingId=null;}
+// ══════════════════════════════════════════════════════════
+// RESUMO DO DIA
+// ══════════════════════════════════════════════════════════
+function openDayModal(date){
+  const _ia=(currentUser.role==='admin');
+  const _grp=state.entries.filter(e=>e.date===date).sort((a,b)=>a.employee.localeCompare(b.employee));
+  if(!_grp.length){toast('Nenhum lançamento neste dia.');return;}
+  const _dt=_grp[0].dayType;
+  let _tM=0,_tV=0,_tP=0;
+  _grp.forEach(e=>{const{mins,final}=calcEntry(e);const p=getPaid(e.id);_tM+=mins;_tV+=final;_tP+=p;});
+  document.getElementById('dm-title').textContent=fmtDate(date)+' · '+wdName(date)+' · '+dayLabel(_dt);
+  let _h='<div class="sum-grid" style="margin-bottom:14px">'
+    +'<div class="sum-card"><div class="sum-label">Funcionários</div><div class="sum-value">'+_grp.length+'</div></div>'
+    +'<div class="sum-card"><div class="sum-label">Horas totais</div><div class="sum-value">'+fmtHours(_tM)+'</div></div>';
+  if(_ia){
+    _h+='<div class="sum-card navy"><div class="sum-label">Total do dia</div><div class="sum-value">'+fmtMoney(_tV)+'</div></div>';
+    if(_tP>0)_h+='<div class="sum-card"><div class="sum-label">Pago</div><div class="sum-value" style="color:var(--green)">'+fmtMoney(_tP)+'</div></div>';
+    if(_tV-_tP>0.01)_h+='<div class="sum-card"><div class="sum-label">Aberto</div><div class="sum-value" style="color:var(--amber)">'+fmtMoney(_tV-_tP)+'</div></div>';
+  }
+  _h+='</div><table class="rep-table"><thead><tr><th>Funcionário</th><th>Horários</th><th>Horas</th>';
+  if(_ia)_h+='<th>Valor</th><th>Status</th>';
+  _h+='</tr></thead><tbody>';
+  _grp.forEach(e=>{
+    const{mins,final}=calcEntry(e);const p=getPaid(e.id);
+    _h+='<tr><td><strong>'+e.employee+'</strong>'
+      +(e.obs?'<br><em style="font-size:11px;color:var(--text3)">'+e.obs+'</em>':'')
+      +(e.adjust?'<br><span class="adjust-chip '+(e.adjust>0?'adjust-pos':'adjust-neg')+'">'+(e.adjust>0?'+':'')+fmtMoney(e.adjust)+(e.adjustObs?' · '+e.adjustObs:'')+'</span>':'')
+      +'</td>'
+      +'<td style="font-family:monospace;font-size:12px">'+e.in1+'-'+e.out1+(e.in2?' / '+e.in2+'-'+e.out2:'')+(e.pga?' ??':'')+'</td>'
+      +'<td>'+fmtHours(mins)+'</td>';
+    if(_ia)_h+='<td><strong>'+fmtMoney(final)+'</strong></td><td><span class="status status-'+e.status+'">'+(e.status==='paid'?'Pago':e.status==='partial'?'Parcial':'Aberto')+'</span></td>';
+    _h+='</tr>';
+  });
+  _h+='</tbody></table><div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">';
+  if(_ia&&(_tV-_tP)>0.01)_h+='<button class="btn btn-green btn-sm" onclick="payDay(\'' +date+ '\');closeDayModal()">Pagar todos</button>';
+  _h+='<button class="btn btn-secondary btn-sm" onclick="closeDayModal()">Fechar</button></div>';
+  document.getElementById('dm-body').innerHTML=_h;
+  document.getElementById('day-modal').classList.add('open');
+}
+function closeDayModal(){document.getElementById('day-modal').classList.remove('open');}
+
+// ══════════════════════════════════════════════════════════
+// HISTÓRICO DO FUNCIONÁRIO (incrementação especial)
+// Mostra timeline completa: lançamentos + pagamentos de um funcionário
+// ══════════════════════════════════════════════════════════
+function openHistModal(emp){
+  const _ia=(currentUser.role==='admin');
+  const _ents=state.entries.filter(e=>e.employee===emp).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!_ents.length){toast('Nenhum lançamento para '+emp+'.');return;}
+  let _totGross=0,_totPaid=0;
+  _ents.forEach(e=>{const{final}=calcEntry(e);_totGross+=final;_totPaid+=getPaid(e.id);});
+  const _saldo=_totGross-_totPaid;
+  document.getElementById('hm-title').textContent='?? Histórico · '+emp;
+  let _h='';
+  if(_ia){
+    _h+='<div class="sum-grid" style="margin-bottom:16px">'
+      +'<div class="sum-card"><div class="sum-label">Lançamentos</div><div class="sum-value">'+_ents.length+'</div></div>'
+      +'<div class="sum-card navy"><div class="sum-label">Total bruto</div><div class="sum-value">'+fmtMoney(_totGross)+'</div></div>'
+      +'<div class="sum-card"><div class="sum-label">Pago</div><div class="sum-value" style="color:var(--green)">'+fmtMoney(_totPaid)+'</div></div>'
+      +'<div class="sum-card"><div class="sum-label">Saldo devedor</div><div class="sum-value" style="color:'+(_saldo>0.01?'var(--amber)':'var(--green)')+'">'+fmtMoney(_saldo)+'</div></div>'
+      +'</div>';
+  }
+  // Timeline agrupada por mês
+  const _byMonth={};
+  _ents.forEach(e=>{const m=e.date.slice(0,7);if(!_byMonth[m])_byMonth[m]=[];_byMonth[m].push(e);});
+  Object.keys(_byMonth).sort((a,b)=>b.localeCompare(a)).forEach(mo=>{
+    const [yr,mn]=mo.split('-');
+    const _mnNames=['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'];
+    const _moLabel=_mnNames[parseInt(mn)-1]+'/'+yr;
+    let _moH=0,_moV=0,_moP=0;
+    _byMonth[mo].forEach(e=>{const{mins,final}=calcEntry(e);_moH+=mins;_moV+=final;_moP+=getPaid(e.id);});
+    _h+='<div style="margin-bottom:20px">';
+    _h+='<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;padding-bottom:6px;border-bottom:2px solid var(--border)">'
+      +'<strong style="font-size:15px;color:var(--text)">'+_moLabel+'</strong>'
+      +'<span style="font-size:12px;color:var(--text2)">'+fmtHours(_moH)+'</span>';
+    if(_ia)_h+='<span style="font-size:12px;color:var(--text2)">· '+fmtMoney(_moV)
+      +(_moP>0?' <span style="color:var(--green)">✓ '+fmtMoney(_moP)+' pago</span>':'')
+      +(_moV-_moP>0.01?' <span style="color:var(--amber)">• '+fmtMoney(_moV-_moP)+' aberto</span>':'')+'</span>';
+    _h+='</div>';
+    // Entradas do mês
+    _byMonth[mo].forEach(e=>{
+      const{mins,final}=calcEntry(e);const _ep=getPaid(e.id);
+      const _stCls='status-'+e.status;const _stLabel=e.status==='paid'?'Pago':e.status==='partial'?'Parcial':'Aberto';
+      _h+='<div style="display:flex;align-items:flex-start;gap:10px;padding:8px 10px;margin-bottom:4px;background:var(--bg2);border-radius:8px;border-left:3px solid '+(e.status==='paid'?'var(--green)':e.status==='partial'?'var(--amber)':'var(--border)')+'">'
+        +'<div style="min-width:70px;font-size:13px;font-weight:600;color:var(--text)">'+fmtDate(e.date)+'<br><span style="font-size:10px;font-weight:400;color:var(--text3)">'+wdName(e.date)+'</span></div>'
+        +'<div style="flex:1">'
+        +'<span style="font-family:monospace;font-size:12px;color:var(--text2)">'+e.in1+'-'+e.out1+(e.in2?' / '+e.in2+'-'+e.out2:'')+'</span>'
+        +' <span style="font-size:12px;color:var(--text2)">· '+fmtHours(mins)+'</span>'
+        +(e.pga?' <span title="Pagamento de alimentação" style="font-size:11px">??</span>':'')
+        +(e.obs?'<br><em style="font-size:11px;color:var(--text3)">'+e.obs+'</em>':'')
+        +(e.adjust?'<br><span class="adjust-chip '+(e.adjust>0?'adjust-pos':'adjust-neg')+'">'+(e.adjust>0?'+':'')+fmtMoney(e.adjust)+(e.adjustObs?' · '+e.adjustObs:'')+'</span>':'')
+        +'</div>';
+      if(_ia){
+        _h+='<div style="text-align:right;min-width:90px">'
+          +'<strong style="font-size:14px">'+fmtMoney(final)+'</strong>';
+        if(_ep>0&&_ep<final)_h+='<br><span style="font-size:11px;color:var(--green)">✓ '+fmtMoney(_ep)+'</span>';
+        _h+='<br><span class="status '+_stCls+'" style="font-size:10px">'+_stLabel+'</span>'
+          +'</div>';
+      }
+      _h+='</div>';
+    });
+    _h+='</div>';
+  });
+  _h+='<div style="text-align:center;margin-top:10px"><button class="btn btn-secondary btn-sm" onclick="closeHistModal()">Fechar</button></div>';
+  document.getElementById('hm-body').innerHTML=_h;
+  document.getElementById('hist-modal').classList.add('open');
+}
+function closeHistModal(){document.getElementById('hist-modal').classList.remove('open');}
+
 // TOAST
 // ══════════════════════════════════════════════════════════
 function toast(msg,dur=3000){
