@@ -274,14 +274,15 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
     <div class="nav-tabs">
       <button class="tab-btn active"       onclick="goTab('dash')">Dashboard</button>
       <button class="tab-btn"              onclick="goTab('lancar')">Lançar</button>
-      <button class="tab-btn"              onclick="goTab('lista')">Lançamentos</button>
+      <button class="tab-btn"              onclick="goTab('lista')">Lançamentos <span id="lista-badge" style="display:none;background:#ef4444;color:#fff;font-size:10px;font-weight:800;padding:1px 5px;border-radius:10px;vertical-align:middle;margin-left:2px"></span></button>
       <button class="tab-btn admin-only"   onclick="goTab('relatorio')">Relatório</button>
       <button class="tab-btn admin-only"   onclick="goTab('funcionarios')">Funcionários</button>
       <button class="tab-btn admin-only"   onclick="goTab('config')">Config</button>
     </div>
     <div class="nav-right">
-      <span class="pill pill-red"   id="hdr-open">R$0</span>
-      <span class="pill pill-green" id="hdr-paid">R$0</span>
+      <span class="pill pill-red"   id="hdr-open" style="display:none">R$0</span>
+      <span class="pill pill-green" id="hdr-paid" style="display:none">R$0</span>
+      <span class="pill" id="hdr-badge" style="display:none;background:#f59e0b;color:#fff"></span>
       <div class="sync-dot spin" id="sync-dot" title="Sincronizando"></div>
       <span class="user-badge" id="user-badge" onclick="doLogout()">sair</span>
     </div>
@@ -292,12 +293,18 @@ hr{border:none;border-top:1px solid var(--border);margin:12px 0}
 
 <main id="app-main" style="display:none">
 
+<!-- ALERTA FIREBASE -->
+<div id="firebase-alert" style="display:none;background:#fef3c7;border:1px solid #fde68a;border-radius:8px;padding:10px 16px;margin:10px 12px 0;font-size:13px;color:#92400e;align-items:center;gap:10px;flex-wrap:wrap">
+  <span>⚠️ <strong>Firebase desconectado</strong> — Dados não estão sincronizando. Acesse <strong>Firebase Console → Firestore → Regras</strong> e altere a data de expiração para uma data futura (ex: 2027-01-01) ou coloque: <code style="background:#fde68a;padding:2px 5px;border-radius:3px;font-size:12px">allow read, write: if true;</code></span>
+  <button onclick="document.getElementById('firebase-alert').style.display='none'" style="background:none;border:none;cursor:pointer;font-size:18px;color:#92400e;flex-shrink:0">×</button>
+</div>
+
 <!-- ═══ DASHBOARD ═══ -->
 <div id="tab-dash" class="tab-pane active">
   <div class="sum-grid" id="dash-top"></div>
   <div id="dash-alerts"></div>
   <div class="card">
-    <div class="card-title">💰 Pendências em aberto</div>
+    <div class="card-title" id="pending-title">💰 Pendências em aberto</div>
     <div id="dash-pending"></div>
   </div>
   <div class="card admin-only">
@@ -639,8 +646,18 @@ async function loadFirebase(){
     state.employees=e2.docs.map(d=>({id:d.id,...d.data()}));
     state.payments =e3.docs.map(d=>({id:d.id,...d.data()}));
     if(e4.exists)state.rates={...DEF_RATES,...e4.data()};
-    setSyncDot('ok');afterLoad();
-  }catch(e){setSyncDot('err');loadLocal();}
+    setSyncDot('ok');
+    const _fb=document.getElementById('firebase-alert');if(_fb)_fb.style.display='none';
+    afterLoad();
+  }catch(e){
+    setSyncDot('err');
+    // Mostra alerta de regras expiradas apenas para admin
+    if(currentUser&&currentUser.role==='admin'){
+      const _fb=document.getElementById('firebase-alert');
+      if(_fb)_fb.style.display='flex';
+    }
+    loadLocal();
+  }
 }
 async function fbSet(col,id,data){saveLocal();if(!useFirebase||!db)return;try{await db.collection(col).doc(id).set(data);setSyncDot('ok');}catch(e){setSyncDot('err');}}
 async function fbDel(col,id){saveLocal();if(!useFirebase||!db)return;try{await db.collection(col).doc(id).delete();setSyncDot('ok');}catch(e){setSyncDot('err');}}
@@ -755,11 +772,17 @@ function renderDashboard(){
       '<div class="sum-card"><div class="sum-label">Custo este mês</div><div class="sum-value">'+fmtMoney(mesVal)+'</div><div class="sum-sub">'+mesDias+' dias</div></div>'+
       '<div class="sum-card"><div class="sum-label">Horas totais</div><div class="sum-value">'+fmtHours(totMins)+'</div><div class="sum-sub">'+state.entries.length+' lançamentos</div></div>';
   }else{
-    const _opEnt=state.entries.filter(e=>e.status!=='paid'&&e.date>=new Date(Date.now()-14*864e5).toISOString().slice(0,10));
+    const _cut14d=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
+    const _opEnt=state.entries.filter(e=>e.status!=='paid'&&e.date>=_cut14d);
+    const _totEnt14=state.entries.filter(e=>e.date>=_cut14d);
+    const _hrs14=_totEnt14.reduce((s,e)=>s+calcEntry(e).mins,0);
+    const _semanaIso=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
+    const _diasSemana=[...new Set(state.entries.filter(e=>e.date>=_semanaIso).map(e=>e.date))].length;
     document.getElementById('dash-top').innerHTML=
-      '<div class="sum-card navy"><div class="sum-label">Dias em aberto</div><div class="sum-value">'+_opEnt.length+'</div><div class="sum-sub">aguardando pagamento</div></div>'+
-      '<div class="sum-card"><div class="sum-label">Dias este mês</div><div class="sum-value">'+mesDias+'</div></div>'+
-      '<div class="sum-card"><div class="sum-label">Horas lançadas</div><div class="sum-value">'+fmtHours(totMins)+'</div></div>';
+      '<div class="sum-card navy"><div class="sum-label">Pendentes (14 dias)</div><div class="sum-value">'+_opEnt.length+'</div><div class="sum-sub">aguardando pagamento</div></div>'+
+      '<div class="sum-card"><div class="sum-label">Dias lançados mês</div><div class="sum-value">'+mesDias+'</div><div class="sum-sub">'+state.entries.filter(e=>e.date.startsWith(todayISO().slice(0,7))).length+' registros</div></div>'+
+      '<div class="sum-card"><div class="sum-label">Horas (14 dias)</div><div class="sum-value">'+fmtHours(_hrs14)+'</div><div class="sum-sub">'+_totEnt14.length+' lançamentos</div></div>'+
+      '<div class="sum-card"><div class="sum-label">Dias esta semana</div><div class="sum-value">'+_diasSemana+'</div><div class="sum-sub">últimos 7 dias</div></div>';
   }
 
   const cutISO=new Date(Date.now()-7*864e5).toISOString().slice(0,10);
@@ -779,6 +802,8 @@ function renderDashboard(){
     byEmp[e.employee].saldo+=saldo;byEmp[e.employee].count++;
     if(e.date<byEmp[e.employee].oldest)byEmp[e.employee].oldest=e.date;
   });
+  const _ptEl=document.getElementById('pending-title');
+  if(_ptEl)_ptEl.textContent=isAdmin?'💰 Pendências em aberto':'📋 Dias aguardando pagamento';
   const pEl=document.getElementById('dash-pending');
   const pEmps=Object.keys(byEmp).sort((a,b)=>byEmp[b].saldo-byEmp[a].saldo);
   if(pEmps.length){
@@ -787,8 +812,8 @@ function renderDashboard(){
       return`<div class="pend-item${od?' overdue':''}">
         <div class="pend-name">${n}</div>
         <div style="font-size:11px;color:var(--text3)">${e.count} dia(s) · desde ${fmtDate(e.oldest)}</div>
-        ${empData?.pix?`<div style="font-size:11px;color:var(--text3)">Pix: ${empData.pix}</div>`:''}
-        <div class="pend-val">${fmtMoney(e.saldo)}</div>
+        ${empData?.pix&&isAdmin?`<div style="font-size:11px;color:var(--text3)">Pix: ${empData.pix}</div>`:''}
+        ${isAdmin?`<div class="pend-val">${fmtMoney(e.saldo)}</div>`:''}
         ${isAdmin?('<div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-xs btn-green" onclick="quickPayAll(\''+n+'\')">Pagar tudo</button><button class="btn btn-xs btn-secondary" onclick="openWA(\''+n+'\')">📲 Mensagem</button></div>'):''}
       </div>`;
     }).join('');
@@ -817,9 +842,9 @@ function renderDashboard(){
   document.getElementById('dash-recent').innerHTML=recent.length?recent.map(e=>{
     const{mins,final}=calcEntry(e);
     return`<div class="entry-item">
-      <div><div class="e-name">${e.employee}</div><div class="e-times">${fmtDate(e.date)} · ${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''}</div></div>
+      <div style="flex:1"><div class="e-name">${e.employee}</div><div class="e-times">${fmtDate(e.date)} · ${e.in1}–${e.out1}${e.in2?`/${e.in2}–${e.out2}`:''} · ${fmtHours(mins)}</div></div>
       <span class="dtag dtag-${e.dayType}">${dayLabel(e.dayType)}</span>
-      ${isAdmin?('<div class="e-val">'+fmtMoney(final)+'</div>'):''}
+      ${isAdmin?`<div class="e-val">${fmtMoney(final)}</div>`:''}
       <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
     </div>`;
   }).join(''):'<div style="color:var(--text3);font-size:13px;padding:8px 0">Nenhum lançamento ainda.</div>';
@@ -1174,7 +1199,7 @@ function renderList(){
     html+='<div style="margin-bottom:14px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;padding:0 2px">'
       +'<span style="font-size:13px;font-weight:700;color:var(--text2)">'+fmtDate(date)+' · '+wdName(date)+'</span>'
       +'<span class="dtag dtag-'+grp[0].dayType+'">'+dayLabel(grp[0].dayType)+'</span>'
-      +(isAdmin?'<span style="margin-left:auto;font-size:12px;color:var(--text2)">Total: <strong>'+fmtMoney(dayTot)+'</strong>'+(dayOpen>0.01?' · Aberto: <strong style=\"color:var(--amber)\">'+fmtMoney(dayOpen)+'</strong>':'')+'</span>':'<span style="margin-left:auto"></span>')
+      +(isAdmin?'<span style="margin-left:auto;font-size:12px;color:var(--text2)">Total: <strong>'+fmtMoney(dayTot)+'</strong>'+(dayOpen>0.01?' · Aberto: <strong style="color:var(--amber)">'+fmtMoney(dayOpen)+'</strong>':'')+'</span>':'<span style="margin-left:auto;font-size:12px;color:var(--text3)">'+grp.length+' lançamento(s)</span>')
       +(isAdmin&&dayOpen>0.01?'<button class="btn btn-xs btn-green" onclick="payDay(\''+date+'\')">Pagar dia</button>':'')
       +'<button class="btn btn-xs btn-secondary" onclick="openDayModal(\''+date+'\')" style="margin-left:4px">&#128202; Resumo</button>'
       +'</div>';
@@ -1190,8 +1215,8 @@ function renderList(){
         </div>
         <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-left:auto">
           <span class="status status-${e.status}">${{open:'Aberto',paid:'Pago',partial:'Parcial'}[e.status]}</span>
-          <div class="e-val">${fmtMoney(final)}</div>
-          ${saldo>0.01?`<span style="font-size:11px;color:var(--amber)">Saldo: ${fmtMoney(saldo)}</span>`:''}
+          ${isAdmin?`<div class="e-val">${fmtMoney(final)}</div>`:''}
+          ${isAdmin&&saldo>0.01?`<span style="font-size:11px;color:var(--amber)">Saldo: ${fmtMoney(saldo)}</span>`:''}
         </div>
         <div style="display:flex;gap:5px;flex-shrink:0;flex-wrap:wrap">
           ${isAdmin?('<button class="btn btn-xs btn-green" onclick="openPay(\''+e.id+'\')">💰</button>'):''}
@@ -1240,19 +1265,33 @@ function updateSummary(){
   const _cut14s=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
   let open=0,paid=0;
   state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
-  document.getElementById('s-open').textContent=_adm?fmtMoney(open):'—';
-  document.getElementById('s-paid').textContent=_adm?fmtMoney(paid):'—';
-  document.getElementById('s-total').textContent=_adm?fmtMoney(open+paid):'—';
-  document.getElementById('s-count').textContent=_adm?state.entries.length:state.entries.filter(e=>e.date>=_cut14s).length;
+  const _cut14cnt=new Date(Date.now()-14*864e5).toISOString().slice(0,10);
+  const _op14=state.entries.filter(e=>e.date>=_cut14cnt);
+  const _opAbertos=_op14.filter(e=>e.status!=='paid').length;
+  document.getElementById('s-open').textContent=_adm?fmtMoney(open):_opAbertos+' em aberto';
+  document.getElementById('s-paid').textContent=_adm?fmtMoney(paid):_op14.filter(e=>e.status==='paid').length+' pagos';
+  document.getElementById('s-total').textContent=_adm?fmtMoney(open+paid):_op14.length+' lançamentos';
+  document.getElementById('s-count').textContent=_adm?state.entries.length:_op14.length+' (14 dias)';
 }
 function updateHeader(){
   const _adm=(currentUser.role==='admin');
-  let open=0,paid=0;
-  state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);open+=Math.max(0,final-p);paid+=p;});
-  document.getElementById('hdr-open').textContent=fmtMoney(open);
+  let open=0,paid=0,openCount=0;
+  state.entries.forEach(e=>{const{final}=calcEntry(e);const p=getPaid(e.id);const s=Math.max(0,final-p);open+=s;paid+=p;if(s>0.01)openCount++;});
+  const _ho=document.getElementById('hdr-open');
   const _hp=document.getElementById('hdr-paid');
-  if(_adm){_hp.textContent=fmtMoney(paid);_hp.style.display='';}
-  else{_hp.style.display='none';}
+  const _hb=document.getElementById('hdr-badge');
+  const _lb=document.getElementById('lista-badge');
+  if(_adm){
+    _ho.textContent=fmtMoney(open);_ho.style.display='';
+    _hp.textContent=fmtMoney(paid);_hp.style.display='';
+    _hb.style.display='none';
+  }else{
+    _ho.style.display='none';_hp.style.display='none';
+    if(openCount>0){_hb.textContent=openCount+' em aberto';_hb.style.display='';}
+    else{_hb.style.display='none';}
+  }
+  // Badge na aba Lançamentos — só abertos sem pagamento
+  if(_lb){if(openCount>0){_lb.textContent=openCount;_lb.style.display='';}else{_lb.style.display='none';}}
 }
 
 // ══════════════════════════════════════════════════════════
@@ -1796,14 +1835,16 @@ function openHistModal(emp){
   const _saldo=_totGross-_totPaid;
   document.getElementById('hm-title').textContent='?? Histórico · '+emp;
   let _h='';
+  const _totMins=_ents.reduce((s,e)=>s+calcEntry(e).mins,0);
+  _h+='<div class="sum-grid" style="margin-bottom:16px">'
+    +'<div class="sum-card"><div class="sum-label">Lançamentos</div><div class="sum-value">'+_ents.length+'</div></div>'
+    +'<div class="sum-card"><div class="sum-label">Total de horas</div><div class="sum-value">'+fmtHours(_totMins)+'</div></div>';
   if(_ia){
-    _h+='<div class="sum-grid" style="margin-bottom:16px">'
-      +'<div class="sum-card"><div class="sum-label">Lançamentos</div><div class="sum-value">'+_ents.length+'</div></div>'
-      +'<div class="sum-card navy"><div class="sum-label">Total bruto</div><div class="sum-value">'+fmtMoney(_totGross)+'</div></div>'
+    _h+='<div class="sum-card navy"><div class="sum-label">Total bruto</div><div class="sum-value">'+fmtMoney(_totGross)+'</div></div>'
       +'<div class="sum-card"><div class="sum-label">Pago</div><div class="sum-value" style="color:var(--green)">'+fmtMoney(_totPaid)+'</div></div>'
-      +'<div class="sum-card"><div class="sum-label">Saldo devedor</div><div class="sum-value" style="color:'+(_saldo>0.01?'var(--amber)':'var(--green)')+'">'+fmtMoney(_saldo)+'</div></div>'
-      +'</div>';
+      +'<div class="sum-card"><div class="sum-label">Saldo devedor</div><div class="sum-value" style="color:'+(_saldo>0.01?'var(--amber)':'var(--green)')+'">'+fmtMoney(_saldo)+'</div></div>';
   }
+  _h+='</div>';
   // Timeline agrupada por mês
   const _byMonth={};
   _ents.forEach(e=>{const m=e.date.slice(0,7);if(!_byMonth[m])_byMonth[m]=[];_byMonth[m].push(e);});
@@ -1820,6 +1861,7 @@ function openHistModal(emp){
     if(_ia)_h+='<span style="font-size:12px;color:var(--text2)">· '+fmtMoney(_moV)
       +(_moP>0?' <span style="color:var(--green)">✓ '+fmtMoney(_moP)+' pago</span>':'')
       +(_moV-_moP>0.01?' <span style="color:var(--amber)">• '+fmtMoney(_moV-_moP)+' aberto</span>':'')+'</span>';
+    else _h+='<span style="font-size:12px;color:var(--text3)">'+_byMonth[mo].length+' lançamento(s)</span>';
     _h+='</div>';
     // Entradas do mês
     _byMonth[mo].forEach(e=>{
@@ -1830,17 +1872,17 @@ function openHistModal(emp){
         +'<div style="flex:1">'
         +'<span style="font-family:monospace;font-size:12px;color:var(--text2)">'+e.in1+'-'+e.out1+(e.in2?' / '+e.in2+'-'+e.out2:'')+'</span>'
         +' <span style="font-size:12px;color:var(--text2)">· '+fmtHours(mins)+'</span>'
-        +(e.pga?' <span title="Pagamento de alimentação" style="font-size:11px">??</span>':'')
+        +(e.pga?' <span title="Desconto almoco" style="font-size:11px">&#127829;</span>':'')
         +(e.obs?'<br><em style="font-size:11px;color:var(--text3)">'+e.obs+'</em>':'')
         +(e.adjust?'<br><span class="adjust-chip '+(e.adjust>0?'adjust-pos':'adjust-neg')+'">'+(e.adjust>0?'+':'')+fmtMoney(e.adjust)+(e.adjustObs?' · '+e.adjustObs:'')+'</span>':'')
         +'</div>';
+      _h+='<div style="text-align:right;min-width:90px">';
       if(_ia){
-        _h+='<div style="text-align:right;min-width:90px">'
-          +'<strong style="font-size:14px">'+fmtMoney(final)+'</strong>';
+        _h+='<strong style="font-size:14px">'+fmtMoney(final)+'</strong>';
         if(_ep>0&&_ep<final)_h+='<br><span style="font-size:11px;color:var(--green)">✓ '+fmtMoney(_ep)+'</span>';
-        _h+='<br><span class="status '+_stCls+'" style="font-size:10px">'+_stLabel+'</span>'
-          +'</div>';
+        _h+='<br>';
       }
+      _h+='<span class="status '+_stCls+'" style="font-size:10px">'+_stLabel+'</span></div>';
       _h+='</div>';
     });
     _h+='</div>';
